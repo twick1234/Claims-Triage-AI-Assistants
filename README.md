@@ -2,6 +2,9 @@
 
 > Multi-agent AI system for Chubb HK typhoon insurance claims triage. Built with Next.js 14 + Anthropic Claude.
 
+**Live demo:** https://claims-triage-ai-assistants.vercel.app
+**Presentation:** https://claims-triage-ai-assistants.vercel.app/presentation.html
+
 A prototype demonstrating intelligent, real-time claims routing for Hong Kong typhoon season. Five AI specialists handle different customer archetypes, with an invisible Triage Agent routing each conversation based on sentiment, urgency, and keywords.
 
 ## Agents
@@ -48,6 +51,9 @@ Open [http://localhost:3000](http://localhost:3000).
 | Human Queue | `/queue` | Operator pickup for escalated cases |
 | Scenario Simulator | `/simulator` | Fire pre-built demo scenarios |
 | Metrics | `/metrics` | KPIs, SLA adherence, agent utilization |
+| Hardware | `/hardware` | Board-per-agent architecture view |
+| Security | `/security` | SAST results and security posture |
+| Presentation | `/presentation.html` | 14-slide offsite presentation |
 
 ## Deployment
 
