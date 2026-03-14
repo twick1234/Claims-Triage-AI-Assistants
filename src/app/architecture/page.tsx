@@ -451,9 +451,96 @@ Rules: grace=distress/elderly/injured · swift=urgent property or vehicle · kar
           </div>
         </section>
 
-        {/* ── SECTION 10: Future integrations ── */}
+        {/* ── SECTION 10: API Calls Explained ── */}
         <section>
-          <SectionLabel label="10" title="Production Integration Roadmap" />
+          <SectionLabel label="10" title="Understanding the API Calls — What Calls What" />
+          <p className="text-gray-400 text-sm mt-2 mb-6">
+            There are two completely separate APIs in play. Confusing them is easy — this section clarifies exactly what each one does and why both are needed.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-gray-900 border border-blue-700/40 rounded-2xl p-6">
+              <div className="text-2xl mb-3">💬</div>
+              <h3 className="font-bold text-blue-400 text-sm mb-1">Telegram API</h3>
+              <div className="text-xs text-gray-500 mb-3">api.telegram.org — free, always free</div>
+              <p className="text-gray-400 text-xs leading-relaxed mb-3">
+                Handles the <strong className="text-white">messaging channel only</strong>. Sends and receives text messages between the customer&apos;s Telegram app and your bot. No AI happens here — it is a pipe, not a brain.
+              </p>
+              <div className="space-y-1 text-xs text-gray-400">
+                <div className="flex gap-2"><span className="text-blue-400">→</span> Customer sends message to Telegram bot</div>
+                <div className="flex gap-2"><span className="text-blue-400">→</span> Telegram API delivers it to your server</div>
+                <div className="flex gap-2"><span className="text-blue-400">→</span> AI generates a response</div>
+                <div className="flex gap-2"><span className="text-blue-400">→</span> Telegram API sends it back to the customer</div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-700 text-xs text-emerald-400 font-semibold">Cost: £0. No token charges. Telegram is always free.</div>
+            </div>
+
+            <div className="bg-gray-900 border border-violet-700/40 rounded-2xl p-6">
+              <div className="text-2xl mb-3">🧠</div>
+              <h3 className="font-bold text-violet-400 text-sm mb-1">Anthropic / DeepSeek API</h3>
+              <div className="text-xs text-gray-500 mb-3">api.anthropic.com — charged per token</div>
+              <p className="text-gray-400 text-xs leading-relaxed mb-3">
+                Handles the <strong className="text-white">intelligence only</strong>. Takes the conversation history and system prompt, runs it through a large language model on Anthropic&apos;s servers, and returns a response. No messaging happens here — it is a brain, not a pipe.
+              </p>
+              <div className="space-y-1 text-xs text-gray-400">
+                <div className="flex gap-2"><span className="text-violet-400">→</span> Your server sends: system prompt + conversation</div>
+                <div className="flex gap-2"><span className="text-violet-400">→</span> Anthropic runs Claude on their GPU servers</div>
+                <div className="flex gap-2"><span className="text-violet-400">→</span> Streams the generated response back</div>
+                <div className="flex gap-2"><span className="text-violet-400">→</span> You are charged per token processed</div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-700 text-xs text-amber-400 font-semibold">Cost: ~$0.01 per message exchange. $5 ≈ 500 conversations.</div>
+            </div>
+          </div>
+
+          {/* The laptop clarification */}
+          <div className="bg-amber-900/20 border border-amber-700/40 rounded-2xl p-6 mb-6">
+            <h3 className="font-bold text-amber-400 text-sm mb-3">Why OpenClaw on the Laptop Felt &quot;Free&quot;</h3>
+            <p className="text-gray-400 text-xs leading-relaxed mb-3">
+              When you ran OpenClaw on your laptop with Telegram, there were still two API calls happening — you just didn&apos;t think of them separately:
+            </p>
+            <div className="font-mono text-xs text-gray-400 bg-gray-950 rounded-xl p-4 leading-relaxed">
+              <div><span className="text-blue-400">Telegram API</span> → <span className="text-gray-300">free, delivers message to OpenClaw on laptop</span></div>
+              <div className="ml-4">→ <span className="text-gray-300">OpenClaw on laptop receives it</span></div>
+              <div className="ml-4">→ <span className="text-violet-400">Anthropic/Claude API</span> → <span className="text-gray-300">paid, generates the response</span></div>
+              <div className="ml-4">→ <span className="text-blue-400">Telegram API</span> → <span className="text-gray-300">free, delivers response back to customer</span></div>
+            </div>
+            <p className="text-gray-500 text-xs mt-3">
+              The laptop was not doing the AI thinking — it was just the relay in the middle. Claude&apos;s servers did the thinking. The API key was configured inside OpenClaw&apos;s config file, so it worked without you explicitly managing it. The AI call was always there — it was just hidden.
+            </p>
+          </div>
+
+          {/* PicoClaw on hardware */}
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6">
+            <h3 className="font-bold text-white text-sm mb-4">PicoClaw on the Sipeed Board — Same Pattern, Smaller Box</h3>
+            <p className="text-gray-400 text-xs leading-relaxed mb-4">
+              The Sipeed LicheeRV Nano W (256MB RAM, 1GHz RISC-V) <strong className="text-red-400">cannot run an LLM locally</strong> — it is far too small. Even the smallest useful language models need 4GB+ RAM. The board acts as the relay, exactly like the laptop did — but smaller, cheaper, and purpose-built.
+            </p>
+            <div className="font-mono text-xs text-gray-400 bg-gray-950 rounded-xl p-4 leading-relaxed mb-4">
+              <div><span className="text-blue-400">Telegram API</span> → <span className="text-gray-300">free, delivers message to PicoClaw on board</span></div>
+              <div className="ml-4">→ <span className="text-gray-300">PicoClaw (Go binary) on RISC-V board receives it</span></div>
+              <div className="ml-4">→ <span className="text-violet-400">Anthropic/DeepSeek API</span> → <span className="text-gray-300">paid/free, generates the response</span></div>
+              <div className="ml-4">→ <span className="text-blue-400">Telegram API</span> → <span className="text-gray-300">free, delivers response back to customer</span></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div className="bg-gray-800 rounded-xl p-3">
+                <div className="text-white font-semibold mb-1">What the board needs</div>
+                <div className="text-gray-400">WiFi connection · Anthropic or DeepSeek API key in PicoClaw config · Telegram bot token</div>
+              </div>
+              <div className="bg-gray-800 rounded-xl p-3">
+                <div className="text-white font-semibold mb-1">What the board does not need</div>
+                <div className="text-gray-400">Local GPU · Large RAM · Local model files · Always-on laptop</div>
+              </div>
+              <div className="bg-emerald-900/30 border border-emerald-700/40 rounded-xl p-3">
+                <div className="text-emerald-400 font-semibold mb-1">Free tier option</div>
+                <div className="text-gray-400">Use DeepSeek free tier instead of Anthropic. Same pattern, zero API cost for prototype volumes.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION 11: Future integrations ── */}
+        <section>
+          <SectionLabel label="11" title="Production Integration Roadmap" />
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               { icon: "📞", title: "NICE CXone", body: "Connect to Chubb's existing contact centre platform. Route AI-handled conversations into the same queue as phone calls for unified reporting.", phase: "Phase 2" },
