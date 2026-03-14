@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PicoClaw Claims Intelligence — Offsite Presentation</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #0f2040;
+    --blue: #1e3a5f;
+    --red: #c41e3a;
+    --red-light: #e63950;
+    --white: #ffffff;
+    --grey: #8a9bb5;
+    --grey-light: #cdd6e8;
+    --grace: #3B82F6;
+    --swift: #F59E0B;
+    --kara: #10B981;
+    --phoenix: #EF4444;
+    --human: #8B5CF6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .deck { width: 100%; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* NAV */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    z-index: 100;
+  }
+
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-dot.active { background: var(--red-light); transform: scale(1.4); }
+
+  .nav-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white);
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    margin: 0 8px;
+    transition: background 0.2s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.1); }
+
+  .slide-counter {
+    position: fixed;
+    top: 24px;
+    right: 32px;
+    font-size: 12px;
+    color: var(--grey);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* TYPOGRAPHY */
+  .tag {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--red-light);
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+
+  h1 { font-size: 52px; line-height: 1.1; font-weight: 800; margin-bottom: 20px; }
+  h2 { font-size: 38px; font-weight: 700; margin-bottom: 16px; }
+  h3 { font-size: 24px; font-weight: 600; margin-bottom: 12px; }
+
+  .subtitle {
+    font-size: 20px;
+    color: var(--grey-light);
+    max-width: 700px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .lead {
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--grey-light);
+    max-width: 800px;
+  }
+
+  /* LAYOUT HELPERS */
+  .center { text-align: center; align-items: center; }
+  .left { align-items: flex-start; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .five-col {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  /* CARDS */
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .card-red { border-color: rgba(196,30,58,0.4); background: rgba(196,30,58,0.08); }
+  .card-blue { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.08); }
+
+  /* AGENT CARDS */
+  .agent-card {
+    border-radius: 14px;
+    padding: 22px 18px;
+    text-align: center;
+    border: 1px solid;
+  }
+  .agent-emoji { font-size: 32px; margin-bottom: 10px; }
+  .agent-name { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .agent-role { font-size: 12px; color: var(--grey-light); line-height: 1.5; }
+
+  /* STAT BOXES */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  .stat-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff, var(--grey-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--grey);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* FLOW DIAGRAM */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1000px;
+  }
+
+  .flow-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--grey);
+  }
+
+  /* TIMELINE */
+  .timeline {
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    align-items: flex-start;
+  }
+
+  .timeline-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--red-light);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .timeline-content h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .timeline-content p { font-size: 14px; color: var(--grey-light); }
+
+  /* BOARD DIAGRAM */
+  .board-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  .board-box {
+    border-radius: 12px;
+    padding: 18px 12px;
+    text-align: center;
+    border: 2px solid;
+    position: relative;
+  }
+
+  .board-box .board-label {
+    font-size: 10px;
+    color: var(--grey);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .board-box .board-emoji { font-size: 28px; margin-bottom: 6px; }
+  .board-box .board-name { font-size: 14px; font-weight: 700; }
+  .board-box .board-ip { font-size: 10px; color: var(--grey); margin-top: 4px; font-family: monospace; }
+  .board-box .board-status {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+  }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; width: 100%; max-width: 700px; }
+  .checklist li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--grey-light);
+  }
+  .check-icon { font-size: 18px; flex-shrink: 0; }
+
+  /* BIG QUOTE */
+  .big-quote {
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1.5;
+    text-align: center;
+    max-width: 800px;
+    color: var(--white);
+    font-style: italic;
+  }
+
+  .big-quote strong { font-weight: 700; color: var(--red-light); font-style: normal; }
+
+  /* TITLE SLIDE */
+  .title-logo {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red-light);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #fff 0%, var(--grey-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 48px;
+    height: 3px;
+    background: var(--red-light);
+    border-radius: 2px;
+    margin: 20px auto;
+  }
+
+  /* PILL BADGES */
+  .pill {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 4px;
+  }
+
+  /* COST TABLE */
+  .cost-table { width: 100%; max-width: 750px; border-collapse: collapse; }
+  .cost-table th {
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--grey);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .cost-table td {
+    padding: 14px 20px;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: var(--grey-light);
+  }
+  .cost-table .highlight { color: var(--white); font-weight: 700; }
+  .cost-table .green { color: #10B981; font-weight: 700; }
+
+  /* KEYBOARD HINT */
+  .key-hint {
+    position: fixed;
+    bottom: 70px;
+    right: 32px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.25);
+  }
+
+  /* SECURITY TABLE */
+  .sec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 1000px; }
+  .sec-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .sec-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .sec-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .sec-text p { font-size: 12px; color: var(--grey); line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide center active" id="slide-0">
+    <div class="title-logo">Chubb Insurance — AI Innovation</div>
+    <h1 class="gradient-text" style="font-size:58px; text-align:center;">PicoClaw Claims<br>Intelligence System</h1>
+    <div class="divider"></div>
+    <p class="subtitle">AI-powered triage for Hong Kong Typhoon claims.<br>Five agents. $100 of hardware. 24/7 coverage.</p>
+    <div style="margin-top:40px; display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
+      <span class="pill" style="background:rgba(196,30,58,0.2); color:#e63950; border:1px solid rgba(196,30,58,0.4);">HK Typhoon Season 2026</span>
+      <span class="pill" style="background:rgba(16,185,129,0.15); color:#10B981; border:1px solid rgba(16,185,129,0.3);">Live Prototype</span>
+      <span class="pill" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3);">Claude AI Powered</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: THE PROBLEM -->
+  <div class="slide center" id="slide-1">
+    <div class="tag">The Challenge</div>
+    <h2>HK Typhoon season overwhelms<br>claims operations</h2>
+    <div class="stat-grid" style="margin-top:40px;">
+      <div class="stat-box">
+        <div class="stat-num" style="-webkit-text-fill-color: #EF4444;">10×</div>
+        <div class="stat-label">Call volume spike<br>during Typhoon T10</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="-webkit-text-fill-color: #F59E0B;">70%</div>
+        <div class="stat-label">Customers prefer<br>phone in emergencies</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="-webkit-text-fill-color: #EF4444;">&gt;60s</div>
+        <div class="stat-label">Answer speed degrades<br>from 20s to 60s+</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="-webkit-text-fill-color: #F59E0B;">15%</div>
+        <div class="stat-label">Abandonment rate<br>surges during T8+</div>
+      </div>
+    </div>
+    <p class="lead" style="text-align:center; margin-top:36px; font-size:18px;">
+      Peak season: May–October. T8+ signals trigger claims surges lasting 24–72 hours.<br>Human teams simply cannot scale fast enough.
+    </p>
+  </div>
+
+  <!-- SLIDE 3: THE SOLUTION -->
+  <div class="slide center" id="slide-2">
+    <div class="tag">The Solution</div>
+    <h2>Five AI agents. Always on.<br>Instantly scalable.</h2>
+    <div class="flow" style="margin-top:40px;">
+      <div class="flow-box" style="background:rgba(107,114,128,0.15); border-color:rgba(107,114,128,0.4);">
+        📨<br><span style="font-size:12px;">Inbound<br>Message</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="background:rgba(107,114,128,0.15); border-color:rgba(107,114,128,0.4);">
+        🎯<br><span style="font-size:12px;">Triage<br>Agent</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="flow-box" style="background:rgba(59,130,246,0.15); border-color:rgba(59,130,246,0.4); min-width:110px; font-size:13px;">💙 Grace<br><span style="font-size:10px; color:var(--grey);">Empathy</span></div>
+        <div class="flow-box" style="background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.4); min-width:110px; font-size:13px;">⚡ Swift<br><span style="font-size:10px; color:var(--grey);">Fast-track</span></div>
+        <div class="flow-box" style="background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.4); min-width:110px; font-size:13px;">📚 Kara<br><span style="font-size:10px; color:var(--grey);">Knowledge</span></div>
+        <div class="flow-box" style="background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.4); min-width:110px; font-size:13px;">🔥 Phoenix<br><span style="font-size:10px; color:var(--grey);">Escalation</span></div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="background:rgba(139,92,246,0.15); border-color:rgba(139,92,246,0.4);">
+        👤<br><span style="font-size:12px;">Human<br>Queue</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.3);">
+        ✅<br><span style="font-size:12px;">Resolved</span>
+      </div>
+    </div>
+    <p class="subtitle" style="margin-top:36px; font-size:16px;">
+      Sentiment-based routing in &lt;3 seconds. Each agent has a distinct personality.<br>Seamless handoff to human queue when needed. GL8 compliant throughout.
+    </p>
+  </div>
+
+  <!-- SLIDE 4: THE AGENTS -->
+  <div class="slide center" id="slide-3">
+    <div class="tag">Agent Personalities</div>
+    <h2>Five agents. One brain. Zero wait time.</h2>
+    <div class="five-col" style="margin-top:36px;">
+      <div class="agent-card" style="border-color:rgba(107,114,128,0.5); background:rgba(107,114,128,0.1);">
+        <div class="agent-emoji">🎯</div>
+        <div class="agent-name">Triage</div>
+        <div class="agent-role">Analyses sentiment & routes instantly. Never speaks to customer.</div>
+      </div>
+      <div class="agent-card" style="border-color:rgba(59,130,246,0.5); background:rgba(59,130,246,0.1);">
+        <div class="agent-emoji">💙</div>
+        <div class="agent-name" style="color:var(--grace);">Grace</div>
+        <div class="agent-role">Warm, patient, bilingual. For elderly, distressed & injured customers.</div>
+      </div>
+      <div class="agent-card" style="border-color:rgba(245,158,11,0.5); background:rgba(245,158,11,0.1);">
+        <div class="agent-emoji">⚡</div>
+        <div class="agent-name" style="color:var(--swift);">Swift</div>
+        <div class="agent-role">Efficient & decisive. Rapid property & vehicle damage claims.</div>
+      </div>
+      <div class="agent-card" style="border-color:rgba(16,185,129,0.5); background:rgba(16,185,129,0.1);">
+        <div class="agent-emoji">📚</div>
+        <div class="agent-name" style="color:var(--kara);">Kara</div>
+        <div class="agent-role">Friendly knowledge expert. Policy questions, FAQ, coverage guidance.</div>
+      </div>
+      <div class="agent-card" style="border-color:rgba(239,68,68,0.5); background:rgba(239,68,68,0.1);">
+        <div class="agent-emoji">🔥</div>
+        <div class="agent-name" style="color:var(--phoenix);">Phoenix</div>
+        <div class="agent-role">Calm & authoritative. Escalations, legal threats, complex claims.</div>
+      </div>
+    </div>
+    <div style="margin-top:28px; padding:16px 28px; background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3); border-radius:10px;">
+      <span style="font-size:15px;">👤 <strong>Human Queue</strong> — Operators monitor in real-time and pick up when AI reaches its limits</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: ROUTING LOGIC -->
+  <div class="slide left" id="slide-4">
+    <div class="tag">Intelligent Routing</div>
+    <h2>Right agent. Every time.</h2>
+    <div class="two-col" style="margin-top:32px;">
+      <div>
+        <div class="card" style="margin-bottom:16px; border-color:rgba(59,130,246,0.3);">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <span style="font-size:20px;">💙</span>
+            <strong style="color:var(--grace);">Grace</strong>
+          </div>
+          <div style="font-size:13px; color:var(--grey-light); line-height:1.7;">
+            "scared" · "my grandmother" · "don't know what to do"<br>
+            "hurt" · "terrified" · "elderly" · distress signals
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px; border-color:rgba(245,158,11,0.3);">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <span style="font-size:20px;">⚡</span>
+            <strong style="color:var(--swift);">Swift</strong>
+          </div>
+          <div style="font-size:13px; color:var(--grey-light); line-height:1.7;">
+            "car crushed" · "roof gone" · "need someone NOW"<br>
+            property/vehicle damage + urgency signals
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(16,185,129,0.3);">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <span style="font-size:20px;">📚</span>
+            <strong style="color:var(--kara);">Kara</strong>
+          </div>
+          <div style="font-size:13px; color:var(--grey-light); line-height:1.7;">
+            "what does my policy cover" · "what is my excess"<br>
+            "how do I claim" · "how long will it take"
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px; border-color:rgba(239,68,68,0.3);">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <span style="font-size:20px;">🔥</span>
+            <strong style="color:var(--phoenix);">Phoenix</strong>
+          </div>
+          <div style="font-size:13px; color:var(--grey-light); line-height:1.7;">
+            "this is unacceptable" · "lawyer" · "sue"<br>
+            "third time calling" · anger + complexity signals
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px; border-color:rgba(139,92,246,0.3);">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <span style="font-size:20px;">👤</span>
+            <strong style="color:var(--human);">Human Queue</strong>
+          </div>
+          <div style="font-size:13px; color:var(--grey-light); line-height:1.7;">
+            "speak to a person" · "真人" · fire/gas emergency<br>
+            After 3 unresolved turns · legal + emotional combo
+          </div>
+        </div>
+        <div class="card" style="background:rgba(196,30,58,0.08); border-color:rgba(196,30,58,0.3);">
+          <div style="font-size:13px; color:var(--grey-light); line-height:1.7;">
+            <strong style="color:#e63950;">⚡ Hard overrides (pre-LLM):</strong><br>
+            "999" · "fire" · "gas leak" → CRITICAL + Grace + alert human<br>
+            "lawyer" / "sue" → Phoenix instantly
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: LIVE DEMO -->
+  <div class="slide center" id="slide-5">
+    <div class="tag">Live Demo</div>
+    <h2>See it in action</h2>
+    <div class="three-col" style="margin-top:36px; max-width:900px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:36px; margin-bottom:12px;">💬</div>
+        <h3 style="font-size:18px; margin-bottom:8px;">Customer Chat</h3>
+        <p style="font-size:13px; color:var(--grey-light);">Live AI agents responding to typhoon claims</p>
+        <div style="margin-top:14px; font-family:monospace; font-size:11px; color:var(--grey); background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">/chat</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:36px; margin-bottom:12px;">🎯</div>
+        <h3 style="font-size:18px; margin-bottom:8px;">Scenario Simulator</h3>
+        <p style="font-size:13px; color:var(--grey-light);">6 typhoon scenarios fire in real-time</p>
+        <div style="margin-top:14px; font-family:monospace; font-size:11px; color:var(--grey); background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">/simulator</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:36px; margin-bottom:12px;">📊</div>
+        <h3 style="font-size:18px; margin-bottom:8px;">Live Dashboard</h3>
+        <p style="font-size:13px; color:var(--grey-light);">Real-time SLA, tNPS, agent utilisation</p>
+        <div style="margin-top:14px; font-family:monospace; font-size:11px; color:var(--grey); background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">/metrics</div>
+      </div>
+    </div>
+    <div style="margin-top:32px; padding:18px 32px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px;">
+      <p style="font-size:15px; color:#10B981;">🎬 Suggested demo flow: Open /simulator → Fire "Mrs. Chan — Flooded Flat" → Watch triage dashboard → Show metrics update live</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: METRICS DASHBOARD -->
+  <div class="slide center" id="slide-6">
+    <div class="tag">Management Visibility</div>
+    <h2>Everything management needs. Live.</h2>
+    <div class="two-col" style="margin-top:32px; max-width:1000px;">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="font-size:16px; margin-bottom:14px; color:var(--grey-light);">📊 Service Level Metrics</h3>
+          <ul style="list-style:none; font-size:14px; color:var(--grey-light); line-height:2;">
+            <li>✅ Total conversations &amp; active now</li>
+            <li>✅ SLA adherence % (target: &gt;95%)</li>
+            <li>✅ Average handle time</li>
+            <li>✅ First contact resolution rate</li>
+            <li>✅ tNPS (post-chat survey score)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="font-size:16px; margin-bottom:14px; color:var(--grey-light);">👥 Human Queue</h3>
+          <ul style="list-style:none; font-size:14px; color:var(--grey-light); line-height:2;">
+            <li>✅ Queue depth &amp; wait times</li>
+            <li>✅ Who answered, how long</li>
+            <li>✅ Human vs AI resolution ratio</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="font-size:16px; margin-bottom:14px; color:var(--grey-light);">🤖 Agent Performance</h3>
+          <ul style="list-style:none; font-size:14px; color:var(--grey-light); line-height:2;">
+            <li>✅ Utilisation per agent (Grace, Swift, Kara…)</li>
+            <li>✅ Routing accuracy</li>
+            <li>✅ Avg response time per agent</li>
+            <li>✅ Escalation rate to human</li>
+          </ul>
+        </div>
+        <div class="card" style="background:rgba(16,185,129,0.06); border-color:rgba(16,185,129,0.2);">
+          <h3 style="font-size:16px; margin-bottom:10px; color:#10B981;">Target SLAs</h3>
+          <div style="font-size:13px; color:var(--grey-light); line-height:1.9;">
+            Bot response: <strong style="color:white;">&lt;3 sec</strong><br>
+            Agent turn: <strong style="color:white;">&lt;30 sec</strong><br>
+            Human queue: <strong style="color:white;">&lt;2 min</strong><br>
+            Containment: <strong style="color:white;">&gt;50%</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: HARDWARE VISION -->
+  <div class="slide center" id="slide-7">
+    <div class="tag">Hardware Vision</div>
+    <h2>One board. One agent.<br>$20 each.</h2>
+    <div class="board-grid" style="margin-top:36px;">
+      <div class="board-box" style="border-color:rgba(107,114,128,0.5); background:rgba(107,114,128,0.1);">
+        <div class="board-status"></div>
+        <div class="board-label">Board 5</div>
+        <div class="board-emoji">🎯</div>
+        <div class="board-name">Triage</div>
+        <div class="board-ip">:8005</div>
+      </div>
+      <div class="board-box" style="border-color:rgba(59,130,246,0.6); background:rgba(59,130,246,0.1);">
+        <div class="board-status"></div>
+        <div class="board-label">Board 1</div>
+        <div class="board-emoji">💙</div>
+        <div class="board-name" style="color:var(--grace);">Grace</div>
+        <div class="board-ip">:8001</div>
+      </div>
+      <div class="board-box" style="border-color:rgba(245,158,11,0.6); background:rgba(245,158,11,0.1);">
+        <div class="board-status"></div>
+        <div class="board-label">Board 2</div>
+        <div class="board-emoji">⚡</div>
+        <div class="board-name" style="color:var(--swift);">Swift</div>
+        <div class="board-ip">:8002</div>
+      </div>
+      <div class="board-box" style="border-color:rgba(16,185,129,0.6); background:rgba(16,185,129,0.1);">
+        <div class="board-status"></div>
+        <div class="board-label">Board 3</div>
+        <div class="board-emoji">📚</div>
+        <div class="board-name" style="color:var(--kara);">Kara</div>
+        <div class="board-ip">:8003</div>
+      </div>
+      <div class="board-box" style="border-color:rgba(239,68,68,0.6); background:rgba(239,68,68,0.1);">
+        <div class="board-status"></div>
+        <div class="board-label">Board 4</div>
+        <div class="board-emoji">🔥</div>
+        <div class="board-name" style="color:var(--phoenix);">Phoenix</div>
+        <div class="board-ip">:8004</div>
+      </div>
+    </div>
+    <div class="three-col" style="margin-top:28px; max-width:900px;">
+      <div style="text-align:center; padding:16px; background:rgba(255,255,255,0.04); border-radius:10px;">
+        <div style="font-size:24px; font-weight:800; color:#10B981;">$100</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Total hardware cost<br>5 × $20 boards</div>
+      </div>
+      <div style="text-align:center; padding:16px; background:rgba(255,255,255,0.04); border-radius:10px;">
+        <div style="font-size:24px; font-weight:800; color:#60a5fa;">~1–2W</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Power per board<br>USB-C powered</div>
+      </div>
+      <div style="text-align:center; padding:16px; background:rgba(255,255,255,0.04); border-radius:10px;">
+        <div style="font-size:24px; font-weight:800; color:#F59E0B;">24/7</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Always on<br>WiFi 6 connected</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: THE HARDWARE -->
+  <div class="slide left" id="slide-8">
+    <div class="tag">Sipeed LicheeRV Nano W</div>
+    <h2>Credit card-sized. Enterprise capable.</h2>
+    <div class="two-col" style="margin-top:32px; max-width:1000px;">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="font-size:15px; color:var(--grey-light); margin-bottom:14px;">📦 Hardware Specs</h3>
+          <div style="font-size:14px; color:var(--grey-light); line-height:2; font-family:monospace;">
+            CPU: SOPHGO SG2002, 1GHz RISC-V<br>
+            RAM: 256MB DDR3<br>
+            Net: WiFi 6 + Bluetooth 5.2<br>
+            Power: USB-C, 1–2W<br>
+            OS: Buildroot Linux (64-bit)<br>
+            Size: Credit card
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:15px; color:var(--grey-light); margin-bottom:14px;">⚙️ Software: PicoClaw</h3>
+          <div style="font-size:14px; color:var(--grey-light); line-height:1.8;">
+            Open-source Go binary that wraps the Anthropic Claude API.<br><br>
+            Each board runs <code style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">picoclaw gateway</code> — an HTTP server with agent-specific personality baked into the system prompt.
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px; background:rgba(196,30,58,0.06); border-color:rgba(196,30,58,0.2);">
+          <h3 style="font-size:15px; color:#e63950; margin-bottom:14px;">🗓 Timeline</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background:#10B981;"></div>
+              <div class="timeline-content">
+                <h4 style="color:#10B981;">Today ✅</h4>
+                <p>Board ordered from AliExpress. SD card flashed. Firmware ready.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <h4>19–27 March 2026</h4>
+                <p>Board arrives. Run setup script. Deploy PicoClaw. First agent live.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background:rgba(255,255,255,0.3);"></div>
+              <div class="timeline-content">
+                <h4>April 2026</h4>
+                <p>5 boards deployed. Full hardware agent cluster. Pre-typhoon season.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:15px; color:var(--grey-light); margin-bottom:12px;">🔌 Migration</h3>
+          <p style="font-size:13px; color:var(--grey-light); line-height:1.7;">
+            Single env var switches between modes:<br>
+            <code style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-size:12px;">AGENT_MODE=simulation|hardware</code><br><br>
+            Dashboard is identical. Only the agent calls change — from local functions to HTTP calls to board IPs.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: SCALABILITY -->
+  <div class="slide center" id="slide-9">
+    <div class="tag">Scalability Story</div>
+    <div class="big-quote">
+      "During T8, we spun up <strong>10 Grace boards</strong> to handle the empathy surge.<br>
+      Total cost: <strong>$200</strong> of hardware.<br>
+      Human equivalent: <strong>$1,000/day</strong>."
+    </div>
+    <div class="stat-grid" style="margin-top:48px;">
+      <div class="stat-box">
+        <div class="stat-num" style="-webkit-text-fill-color: #10B981;">$0.10</div>
+        <div class="stat-label">Cost per AI<br>interaction</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="-webkit-text-fill-color: #EF4444;">$10</div>
+        <div class="stat-label">Cost per human<br>interaction</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="-webkit-text-fill-color: #60a5fa;">100×</div>
+        <div class="stat-label">AI vs Human<br>cost ratio</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="-webkit-text-fill-color: #F59E0B;">∞</div>
+        <div class="stat-label">Scale with<br>more boards</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: COST ANALYSIS -->
+  <div class="slide center" id="slide-10">
+    <div class="tag">Cost Analysis</div>
+    <h2>The numbers are compelling</h2>
+    <table class="cost-table" style="margin-top:36px;">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Cost</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>5 × LicheeRV Nano boards</td>
+          <td class="highlight">$100</td>
+          <td>One-time hardware cost</td>
+        </tr>
+        <tr>
+          <td>Claude API (claude-sonnet)</td>
+          <td class="highlight">~$5/day</td>
+          <td>During active typhoon surge</td>
+        </tr>
+        <tr>
+          <td>Power (5 boards × 2W)</td>
+          <td class="highlight">&lt;$1/mo</td>
+          <td>Running 24/7</td>
+        </tr>
+        <tr>
+          <td style="border-top:1px solid rgba(255,255,255,0.15);"><strong>AI total (surge day)</strong></td>
+          <td class="green">~$5</td>
+          <td>Handles 1,000+ interactions</td>
+        </tr>
+        <tr>
+          <td><strong>Human agent (surge day)</strong></td>
+          <td style="color:#EF4444; font-weight:700;">$400–800</td>
+          <td>8 agents × $50–100/day</td>
+        </tr>
+        <tr>
+          <td><strong>AI containment target</strong></td>
+          <td class="green">&gt;50%</td>
+          <td>Reduces human load by half</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SLIDE 12: SECURITY & COMPLIANCE -->
+  <div class="slide center" id="slide-11">
+    <div class="tag">Security &amp; Compliance</div>
+    <h2>Built secure from day one</h2>
+    <div class="sec-grid" style="margin-top:32px;">
+      <div class="sec-item">
+        <div class="sec-icon">✅</div>
+        <div class="sec-text">
+          <h4>GL8 AI Disclosure</h4>
+          <p>Every agent identifies as AI on first contact. Human option always visible.</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-icon">✅</div>
+        <div class="sec-text">
+          <h4>No Secrets in Code</h4>
+          <p>API keys via environment variables only. .gitignore enforced. Never in repo.</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-icon">✅</div>
+        <div class="sec-text">
+          <h4>HTTP Security Headers</h4>
+          <p>X-Frame-Options, X-XSS-Protection, Content-Type-Options, Referrer-Policy.</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-icon">✅</div>
+        <div class="sec-text">
+          <h4>SAST Scanning</h4>
+          <p>ESLint security plugin running on every commit. TypeScript strict mode.</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-icon">✅</div>
+        <div class="sec-text">
+          <h4>No SQL Injection Surface</h4>
+          <p>In-memory store (no DB). No raw query construction anywhere.</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-icon">✅</div>
+        <div class="sec-text">
+          <h4>Input Validation</h4>
+          <p>All API routes validate inputs. Hard overrides prevent prompt injection escalation.</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-icon">⚠️</div>
+        <div class="sec-text">
+          <h4>Auth (Production TODO)</h4>
+          <p>Operator endpoints need auth before production. Prototype deliberately open.</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-icon">⚠️</div>
+        <div class="sec-text">
+          <h4>Rate Limiting (Production TODO)</h4>
+          <p>Add API rate limiting before production to prevent abuse.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: ROADMAP -->
+  <div class="slide left" id="slide-12">
+    <div class="tag">Roadmap</div>
+    <h2>From prototype to production</h2>
+    <div class="three-col" style="margin-top:32px; max-width:1100px;">
+      <div class="card" style="border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.06);">
+        <div style="color:#10B981; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:14px;">NOW — PROTOTYPE ✅</div>
+        <ul style="list-style:none; font-size:14px; color:var(--grey-light); line-height:2.1;">
+          <li>✅ 5-agent system running</li>
+          <li>✅ Sentiment-based routing</li>
+          <li>✅ Human queue</li>
+          <li>✅ Live dashboards</li>
+          <li>✅ Bilingual (EN/ZH)</li>
+          <li>✅ GL8 compliance</li>
+          <li>✅ 6 demo scenarios</li>
+          <li>✅ Security scan</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.06);">
+        <div style="color:#F59E0B; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:14px;">MARCH–APRIL — HARDWARE</div>
+        <ul style="list-style:none; font-size:14px; color:var(--grey-light); line-height:2.1;">
+          <li>📦 Boards arrive (19–27 Mar)</li>
+          <li>🔌 PicoClaw on each board</li>
+          <li>📡 WiFi cluster setup</li>
+          <li>🔄 AGENT_MODE=hardware</li>
+          <li>📊 Board health dashboard</li>
+          <li>🔑 API auth on operators</li>
+          <li>⚡ Rate limiting</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(196,30,58,0.3); background:rgba(196,30,58,0.06);">
+        <div style="color:#e63950; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:14px;">MAY — TYPHOON SEASON</div>
+        <ul style="list-style:none; font-size:14px; color:var(--grey-light); line-height:2.1;">
+          <li>🌀 Live HK typhoon handling</li>
+          <li>📞 NICE CXone integration</li>
+          <li>🗄 Claims Connect linkage</li>
+          <li>📱 SMS/WhatsApp gateway</li>
+          <li>🤝 Amelia chatbot handoff</li>
+          <li>📈 Surge auto-scaling</li>
+          <li>🎓 Agent self-improvement</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: CLOSING -->
+  <div class="slide center" id="slide-13">
+    <div class="tag">Summary</div>
+    <h1 class="gradient-text" style="text-align:center; font-size:46px;">Five agents.<br>One hundred dollars.<br>Zero wait time.</h1>
+    <div class="divider"></div>
+    <p class="subtitle" style="margin-bottom:36px;">
+      Today: running on a laptop, demonstrating the full system.<br>
+      March: running on $100 of hardware, one board per agent.<br>
+      May: live for HK typhoon season, before peak hits.
+    </p>
+    <div style="display:flex; gap:24px; flex-wrap:wrap; justify-content:center;">
+      <div style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:28px; font-weight:800; color:#10B981;">$100</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Hardware</div>
+      </div>
+      <div style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:28px; font-weight:800; color:#60a5fa;">&lt;3s</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Response time</div>
+      </div>
+      <div style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:28px; font-weight:800; color:#F59E0B;">5</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Agents</div>
+      </div>
+      <div style="text-align:center; padding:16px 24px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:28px; font-weight:800; color:#EF4444;">24/7</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Coverage</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn" onclick="prev()">← Prev</button>
+  <div id="dots"></div>
+  <button class="nav-btn" onclick="next()">Next →</button>
+</div>
+
+<div class="slide-counter" id="counter">1 / 14</div>
+<div class="key-hint">← → arrow keys to navigate</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current > n ? current : current].classList.remove('exit'), 400);
+
+    // reset previous exit
+    slides.forEach(s => { if (s !== slides[n]) { s.classList.remove('active'); } });
+
+    current = n;
+    slides[current].classList.add('active');
+    slides[current].classList.remove('exit');
+
+    // Update dots
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+
+    // Update counter
+    document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+  }
+
+  function next() { if (current < total - 1) goTo(current + 1); }
+  function prev() { if (current > 0) goTo(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(total - 1);
+  });
+</script>
+</body>
+</html>
