@@ -353,25 +353,91 @@ export default function HardwarePage() {
           </div>
         </div>
 
+        {/* Board 1 Setup Guide */}
+        <div className="bg-gray-800/50 border border-cyan-700/40 rounded-2xl p-6">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+            Board 1 Setup — Step by Step (When It Arrives)
+          </h2>
+          <p className="text-xs text-gray-500 mb-5">
+            PicoClaw works identically to OpenClaw — Telegram in, Claude API out, response back via Telegram.
+            Config is a <code className="bg-gray-800 text-cyan-300 px-1 rounded">.env</code> file instead of <code className="bg-gray-800 text-cyan-300 px-1 rounded">clawdbot.json</code>.
+            Version: <span className="text-cyan-400 font-semibold">v0.2.2</span> (released 11 Mar 2026).
+          </p>
+
+          <div className="space-y-4">
+            {[
+              {
+                n: "1",
+                title: "Physical setup",
+                code: null,
+                body: "Insert SD card (underside slot). Connect USB-C power. Wait 60 seconds. SD card already flashed with 2026-01-14 firmware.",
+              },
+              {
+                n: "2",
+                title: "Find IP address",
+                code: null,
+                body: "Check router DHCP leases for new device — hostname will be 'licheervnano'. Tell Claude Code the IP and setup continues from there. Recommended: set a static DHCP reservation at 192.168.1.51.",
+              },
+              {
+                n: "3",
+                title: "SSH in",
+                code: "ssh root@192.168.1.51\n# Password: root (or blank)",
+              },
+              {
+                n: "4",
+                title: "Install PicoClaw (RISC-V 64-bit)",
+                code: "wget https://github.com/sipeed/picoclaw/releases/download/v0.2.2/picoclaw_riscv64.deb\ndpkg -i picoclaw_riscv64.deb\npicoclaw --version",
+              },
+              {
+                n: "5",
+                title: "Configure — API keys + Telegram token",
+                code: `mkdir -p /etc/picoclaw\ncat > /etc/picoclaw/.env << 'EOF'\nANTHROPIC_API_KEY=your_key_here\nTELEGRAM_BOT_TOKEN=your_telegram_token_here\nTZ=Asia/Hong_Kong\nEOF`,
+              },
+              {
+                n: "6",
+                title: "Auto-restart via systemd (mirrors OpenClaw's clawdbot-gateway.service)",
+                code: `cat > /etc/systemd/system/picoclaw-grace.service << 'EOF'\n[Unit]\nDescription=PicoClaw Grace Agent\nAfter=network-online.target\n\n[Service]\nWorkingDirectory=/etc/picoclaw\nEnvironmentFile=/etc/picoclaw/.env\nExecStart=/usr/bin/picoclaw start\nRestart=always\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\nEOF\nsystemctl enable --now picoclaw-grace`,
+              },
+              {
+                n: "7",
+                title: "Health cron (mirrors Claims-Phoenix crontab)",
+                code: `# Auto-restart if service dies\n*/5 * * * * systemctl is-active --quiet picoclaw-grace || systemctl restart picoclaw-grace`,
+              },
+              {
+                n: "8",
+                title: "Wire into dashboard — update .env.local on laptop",
+                code: "AGENT_MODE=hardware\nGRACE_URL=http://192.168.1.51:8001\n# Swift/Kara/Phoenix/Triage stay in simulation",
+              },
+            ].map((step) => (
+              <div key={step.n} className="flex gap-4">
+                <div className="w-6 h-6 rounded-full bg-cyan-900/60 border border-cyan-700/50 text-cyan-400 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                  {step.n}
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-semibold text-white mb-1">{step.title}</div>
+                  <div className="text-xs text-gray-400 mb-2">{step.body}</div>
+                  {step.code && (
+                    <pre className="bg-gray-950 border border-gray-700 rounded-lg p-3 text-xs text-emerald-300 overflow-x-auto leading-relaxed">{step.code}</pre>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Links */}
         <div className="flex gap-3 flex-wrap text-sm">
-          <Link
-            href="/"
-            className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-xl transition-colors border border-gray-700"
-          >
+          <Link href="/" className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-xl transition-colors border border-gray-700">
             ← Home
           </Link>
-          <Link
-            href="/metrics"
-            className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-xl transition-colors border border-gray-700"
-          >
+          <Link href="/metrics" className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-xl transition-colors border border-gray-700">
             Metrics Dashboard
           </Link>
-          <Link
-            href="/simulator"
-            className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-xl transition-colors border border-gray-700"
-          >
+          <Link href="/simulator" className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-xl transition-colors border border-gray-700">
             Scenario Simulator
+          </Link>
+          <Link href="/architecture" className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-xl transition-colors border border-gray-700">
+            Architecture
           </Link>
         </div>
       </div>

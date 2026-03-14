@@ -82,9 +82,17 @@ export default function HomePage() {
       <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 border-b border-gray-800">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/20 via-transparent to-transparent" />
         <div className="relative max-w-6xl mx-auto px-6 py-16 text-center">
-          <div className="inline-flex items-center gap-2 bg-red-900/30 border border-red-700/50 text-red-400 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 uppercase tracking-widest">
-            <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
-            Preparing for HK Typhoon Season 2026
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+            <div className="inline-flex items-center gap-2 bg-red-900/30 border border-red-700/50 text-red-400 text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
+              Preparing for HK Typhoon Season 2026
+            </div>
+            <a
+              href="/presentation.html"
+              className="inline-flex items-center gap-2 bg-amber-900/30 border border-amber-700/50 text-amber-400 text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-amber-900/50 transition-colors"
+            >
+              📊 View Presentation
+            </a>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Claims Triage <span className="text-red-400">AI</span>
