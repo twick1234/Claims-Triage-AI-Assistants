@@ -5,6 +5,10 @@
 **Live demo:** https://claims-triage-ai-assistants.vercel.app
 **Presentation:** https://claims-triage-ai-assistants.vercel.app/presentation.html
 
+> **No laptop required for the prototype.** The app runs entirely on Vercel — agents call the Anthropic Claude API directly from the cloud. Open the URL on any device, anywhere.
+>
+> **Hardware is the next step.** 1 Sipeed LicheeRV Nano W board is arriving March 2026. Grace will be the first agent deployed on hardware. Once validated, additional boards will be ordered one at a time — one per agent — until the full 5-board cluster is running.
+
 A prototype demonstrating intelligent, real-time claims routing for Hong Kong typhoon season. Five AI specialists handle different customer archetypes, with an invisible Triage Agent routing each conversation based on sentiment, urgency, and keywords.
 
 ## Agents

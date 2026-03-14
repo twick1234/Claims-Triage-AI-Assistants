@@ -53,7 +53,7 @@ const NAV_TILES = [
     href: "/hardware",
     emoji: "🔌",
     title: "Hardware Architecture",
-    desc: "Board-per-agent mapping. 5 Sipeed LicheeRV Nano W boards arriving March 2026.",
+    desc: "Board-per-agent architecture. Board 1 (Grace) arriving March 2026 — prove it works, then order more.",
     color: "from-cyan-700 to-cyan-900",
     border: "border-cyan-600",
   },

@@ -12,10 +12,12 @@ const BOARDS = [
     port: 8001,
     ip: "192.168.1.51",
     color: "#3B82F6",
-    border: "border-blue-500/40",
+    border: "border-blue-500/60",
     bg: "bg-blue-500/10",
     dot: "bg-blue-400",
     triggers: "Distressed · Elderly · Injured",
+    phase: "Phase 1 — Arriving Mar 2026",
+    phaseColor: "text-blue-400",
   },
   {
     id: "swift",
@@ -26,10 +28,12 @@ const BOARDS = [
     port: 8002,
     ip: "192.168.1.52",
     color: "#F59E0B",
-    border: "border-amber-500/40",
-    bg: "bg-amber-500/10",
+    border: "border-amber-500/30",
+    bg: "bg-amber-500/5",
     dot: "bg-amber-400",
     triggers: "Urgent · Property · Vehicle",
+    phase: "Phase 2 — Pending validation",
+    phaseColor: "text-gray-500",
   },
   {
     id: "kara",
@@ -40,10 +44,12 @@ const BOARDS = [
     port: 8003,
     ip: "192.168.1.53",
     color: "#10B981",
-    border: "border-emerald-500/40",
-    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/30",
+    bg: "bg-emerald-500/5",
     dot: "bg-emerald-400",
     triggers: "Policy Questions · Coverage",
+    phase: "Phase 3 — Pending",
+    phaseColor: "text-gray-500",
   },
   {
     id: "phoenix",
@@ -54,10 +60,12 @@ const BOARDS = [
     port: 8004,
     ip: "192.168.1.54",
     color: "#EF4444",
-    border: "border-red-500/40",
-    bg: "bg-red-500/10",
+    border: "border-red-500/30",
+    bg: "bg-red-500/5",
     dot: "bg-red-400",
     triggers: "Angry · Legal Threats · Complex",
+    phase: "Phase 4 — Pending",
+    phaseColor: "text-gray-500",
   },
   {
     id: "triage",
@@ -68,10 +76,12 @@ const BOARDS = [
     port: 8005,
     ip: "192.168.1.55",
     color: "#8B5CF6",
-    border: "border-violet-500/40",
-    bg: "bg-violet-500/10",
+    border: "border-violet-500/30",
+    bg: "bg-violet-500/5",
     dot: "bg-violet-400",
     triggers: "All incoming messages",
+    phase: "Phase 5 — Pending",
+    phaseColor: "text-gray-500",
   },
 ];
 
@@ -111,13 +121,12 @@ export default function HardwarePage() {
             <div className="text-2xl mt-0.5">🔌</div>
             <div>
               <div className="text-amber-400 font-semibold text-sm mb-1">
-                Coming soon: Live board status when hardware arrives March 2026
+                Board 1 arriving March 2026 — phased rollout
               </div>
               <p className="text-amber-200/60 text-sm">
-                5 Sipeed LicheeRV Nano W boards are on order (arriving 19–27 March 2026). When{" "}
-                <code className="bg-gray-800 text-amber-300 px-1 rounded text-xs">AGENT_MODE=hardware</code> is set,
-                this page will show live board IPs, uptime, last heartbeat, and per-board conversation load.
-                Currently showing simulated agent status.
+                1 Sipeed LicheeRV Nano W board is on order (arriving 19–27 March 2026). <strong className="text-amber-300">Grace</strong> will be the first agent deployed on hardware.
+                Once validated, additional boards will be ordered one at a time — one per agent — until the full cluster is running.
+                Set <code className="bg-gray-800 text-amber-300 px-1 rounded text-xs">AGENT_MODE=hardware</code> and <code className="bg-gray-800 text-amber-300 px-1 rounded text-xs">GRACE_URL</code> to activate hardware mode for Grace while others remain in simulation.
               </p>
             </div>
           </div>
@@ -197,6 +206,10 @@ export default function HardwarePage() {
                     <span className="text-gray-300 font-mono">
                       {board.ip}:{board.port}
                     </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Rollout</span>
+                    <span className={board.phaseColor}>{board.phase}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-500">Status</span>
@@ -306,7 +319,7 @@ export default function HardwarePage() {
           </div>
           <div className="mt-4 pt-4 border-t border-gray-700 text-xs text-gray-500">
             Software: PicoClaw (github.com/sipeed/picoclaw) — Go binary, HTTP gateway to Anthropic Claude API.
-            Each board costs ~$20. Total cluster (5 boards): ~$100.
+            Each board costs ~$20. Goal: 5-board cluster (~$100 total). Proving concept with Board 1 (Grace) first.
           </div>
         </div>
 
