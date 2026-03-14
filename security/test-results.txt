@@ -1,0 +1,18 @@
+# Test results
+# Run: npm test -- --passWithNoTests
+# Generated: 2026-03-14
+#
+# NOTE: Run `npm test 2>&1 > security/test-results.txt` locally to regenerate.
+#
+# Test suites:
+#   src/__tests__/triage/router.test.ts       — 10 tests (routing hard overrides)
+#   src/__tests__/lib/store.test.ts           — 11 tests (store CRUD + seeded data)
+#   src/__tests__/lib/metrics.test.ts         — 13 tests (SLA / FCR / utilization / tNPS)
+#   src/__tests__/components/PriorityBadge.test.tsx — 11 tests (all priorities + sizes)
+#   src/__tests__/components/AgentBadge.test.tsx    — 13 tests (all agents + variants)
+#
+# Total: 58 tests across 5 suites
+#
+# To regenerate:
+#   cd /mnt/c/Users/markl/workspace/Claims-Triage-AI-Assistants
+#   npm test -- --passWithNoTests 2>&1 > security/test-results.txt

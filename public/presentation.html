@@ -672,57 +672,61 @@
 
   <!-- SLIDE 8: HARDWARE VISION -->
   <div class="slide center" id="slide-7">
-    <div class="tag">Hardware Vision</div>
-    <h2>One board. One agent.<br>$20 each.</h2>
-    <div class="board-grid" style="margin-top:36px;">
-      <div class="board-box" style="border-color:rgba(107,114,128,0.5); background:rgba(107,114,128,0.1);">
+    <div class="tag">Hardware Vision — Phased Rollout</div>
+    <h2>Prove it with one board.<br>Scale to five.</h2>
+    <div class="board-grid" style="margin-top:32px;">
+      <!-- Grace — first board, arriving -->
+      <div class="board-box" style="border-color:rgba(59,130,246,0.9); background:rgba(59,130,246,0.15); box-shadow: 0 0 18px rgba(59,130,246,0.3);">
         <div class="board-status"></div>
-        <div class="board-label">Board 5</div>
-        <div class="board-emoji">🎯</div>
-        <div class="board-name">Triage</div>
-        <div class="board-ip">:8005</div>
-      </div>
-      <div class="board-box" style="border-color:rgba(59,130,246,0.6); background:rgba(59,130,246,0.1);">
-        <div class="board-status"></div>
-        <div class="board-label">Board 1</div>
+        <div class="board-label" style="color:#60a5fa; font-weight:700;">PHASE 1 — ARRIVING</div>
         <div class="board-emoji">💙</div>
         <div class="board-name" style="color:var(--grace);">Grace</div>
-        <div class="board-ip">:8001</div>
+        <div class="board-ip">Board 1 · :8001</div>
       </div>
-      <div class="board-box" style="border-color:rgba(245,158,11,0.6); background:rgba(245,158,11,0.1);">
-        <div class="board-status"></div>
-        <div class="board-label">Board 2</div>
+      <!-- Others — planned -->
+      <div class="board-box" style="border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.05); opacity:0.6;">
+        <div class="board-label">PHASE 2</div>
         <div class="board-emoji">⚡</div>
         <div class="board-name" style="color:var(--swift);">Swift</div>
-        <div class="board-ip">:8002</div>
+        <div class="board-ip">Board 2 · :8002</div>
       </div>
-      <div class="board-box" style="border-color:rgba(16,185,129,0.6); background:rgba(16,185,129,0.1);">
-        <div class="board-status"></div>
-        <div class="board-label">Board 3</div>
+      <div class="board-box" style="border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.05); opacity:0.6;">
+        <div class="board-label">PHASE 3</div>
         <div class="board-emoji">📚</div>
         <div class="board-name" style="color:var(--kara);">Kara</div>
-        <div class="board-ip">:8003</div>
+        <div class="board-ip">Board 3 · :8003</div>
       </div>
-      <div class="board-box" style="border-color:rgba(239,68,68,0.6); background:rgba(239,68,68,0.1);">
-        <div class="board-status"></div>
-        <div class="board-label">Board 4</div>
+      <div class="board-box" style="border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.05); opacity:0.6;">
+        <div class="board-label">PHASE 4</div>
         <div class="board-emoji">🔥</div>
         <div class="board-name" style="color:var(--phoenix);">Phoenix</div>
-        <div class="board-ip">:8004</div>
+        <div class="board-ip">Board 4 · :8004</div>
+      </div>
+      <div class="board-box" style="border-color:rgba(107,114,128,0.3); background:rgba(107,114,128,0.05); opacity:0.6;">
+        <div class="board-label">PHASE 5</div>
+        <div class="board-emoji">🎯</div>
+        <div class="board-name">Triage</div>
+        <div class="board-ip">Board 5 · :8005</div>
       </div>
     </div>
-    <div class="three-col" style="margin-top:28px; max-width:900px;">
-      <div style="text-align:center; padding:16px; background:rgba(255,255,255,0.04); border-radius:10px;">
-        <div style="font-size:24px; font-weight:800; color:#10B981;">$100</div>
-        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Total hardware cost<br>5 × $20 boards</div>
+    <div style="margin-top:24px; padding:14px 28px; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); border-radius:10px; max-width:800px;">
+      <p style="font-size:14px; color:#93c5fd;">
+        <strong>Mixed mode:</strong> Grace runs on hardware. Swift, Kara, Phoenix, Triage stay in simulation.<br>
+        The dashboard looks identical. Validate first — then add boards one by one.
+      </p>
+    </div>
+    <div class="three-col" style="margin-top:20px; max-width:900px;">
+      <div style="text-align:center; padding:14px; background:rgba(255,255,255,0.04); border-radius:10px;">
+        <div style="font-size:22px; font-weight:800; color:#10B981;">$20</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">First board cost<br>Proof of concept</div>
       </div>
-      <div style="text-align:center; padding:16px; background:rgba(255,255,255,0.04); border-radius:10px;">
-        <div style="font-size:24px; font-weight:800; color:#60a5fa;">~1–2W</div>
-        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Power per board<br>USB-C powered</div>
+      <div style="text-align:center; padding:14px; background:rgba(255,255,255,0.04); border-radius:10px;">
+        <div style="font-size:22px; font-weight:800; color:#60a5fa;">$100</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Full 5-board cluster<br>Goal state</div>
       </div>
-      <div style="text-align:center; padding:16px; background:rgba(255,255,255,0.04); border-radius:10px;">
-        <div style="font-size:24px; font-weight:800; color:#F59E0B;">24/7</div>
-        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Always on<br>WiFi 6 connected</div>
+      <div style="text-align:center; padding:14px; background:rgba(255,255,255,0.04); border-radius:10px;">
+        <div style="font-size:22px; font-weight:800; color:#F59E0B;">24/7</div>
+        <div style="font-size:12px; color:var(--grey); margin-top:4px;">Always on<br>~1–2W per board</div>
       </div>
     </div>
   </div>
@@ -949,15 +953,15 @@
         </ul>
       </div>
       <div class="card" style="border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.06);">
-        <div style="color:#F59E0B; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:14px;">MARCH–APRIL — HARDWARE</div>
+        <div style="color:#F59E0B; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:14px;">MARCH–APRIL — HARDWARE ROLLOUT</div>
         <ul style="list-style:none; font-size:14px; color:var(--grey-light); line-height:2.1;">
-          <li>📦 Boards arrive (19–27 Mar)</li>
-          <li>🔌 PicoClaw on each board</li>
-          <li>📡 WiFi cluster setup</li>
-          <li>🔄 AGENT_MODE=hardware</li>
-          <li>📊 Board health dashboard</li>
-          <li>🔑 API auth on operators</li>
-          <li>⚡ Rate limiting</li>
+          <li>📦 Board 1 arrives (19–27 Mar)</li>
+          <li>💙 Grace deployed on hardware</li>
+          <li>✅ Validate mixed mode works</li>
+          <li>📦 Order boards 2–5 if proven</li>
+          <li>⚡→📚→🔥→🎯 Roll out agents</li>
+          <li>📊 Board health dashboard live</li>
+          <li>🔑 API auth + rate limiting</li>
         </ul>
       </div>
       <div class="card" style="border-color:rgba(196,30,58,0.3); background:rgba(196,30,58,0.06);">

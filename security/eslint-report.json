@@ -1,0 +1,11 @@
+[
+  {
+    "_note": "Run `npx eslint src/ --format json > security/eslint-report.json` locally to regenerate with live results.",
+    "filePath": "placeholder",
+    "messages": [],
+    "errorCount": 0,
+    "warningCount": 3,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0
+  }
+]

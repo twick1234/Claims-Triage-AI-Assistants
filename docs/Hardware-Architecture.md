@@ -2,8 +2,22 @@
 
 ## From Laptop Simulation to Physical Agent Boards
 
-**Status:** Hardware on order — arriving 19–27 March 2026
-**Target:** 5× Sipeed LicheeRV Nano W boards, one per agent
+**Status:** Board 1 on order — arriving 19–27 March 2026
+**Goal:** 5× Sipeed LicheeRV Nano W boards, one per agent
+**Approach:** Validate with Board 1 (Grace) first. Add boards one at a time as concept is proven.
+
+## Phased Rollout
+
+| Phase | Boards | Agents on Hardware | Agents in Simulation | Status |
+|-------|--------|-------------------|----------------------|--------|
+| Phase 0 | 0 | None | All 5 | ✅ Now — fully working |
+| Phase 1 | 1 | Grace 💙 | Swift, Kara, Phoenix, Triage | 🔜 Board arrives Mar 2026 |
+| Phase 2 | 2 | Grace 💙, Swift ⚡ | Kara, Phoenix, Triage | Pending validation |
+| Phase 3 | 3 | Grace 💙, Swift ⚡, Kara 📚 | Phoenix, Triage | Pending |
+| Phase 4 | 4 | Grace 💙, Swift ⚡, Kara 📚, Phoenix 🔥 | Triage | Pending |
+| Phase 5 | 5 | All agents | None | Full hardware cluster |
+
+The app supports **mixed mode** — some agents on hardware, others in simulation simultaneously. The dashboard looks and behaves identically in all phases.
 
 ---
 

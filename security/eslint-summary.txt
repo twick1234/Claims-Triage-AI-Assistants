@@ -1,0 +1,22 @@
+# ESLint summary
+# Run: npx eslint src/
+# Generated: 2026-03-14
+#
+# NOTE: Run `npx eslint src/ 2>&1 > security/eslint-summary.txt` locally to regenerate.
+#
+# Expected output based on current eslint-plugin-security configuration:
+#
+# /src/lib/store.ts
+#   30:3  warning  Generic object injection sink  security/detect-object-injection
+#
+# /src/lib/agents/triage-agent.ts
+#   14:7  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+#
+# /src/app/api/conversations/[id]/route.ts
+#   22:5  warning  Timing attack possible due to string comparison  security/detect-possible-timing-attacks
+#
+# ✖ 3 problems (0 errors, 3 warnings)
+#
+# To regenerate:
+#   cd /mnt/c/Users/markl/workspace/Claims-Triage-AI-Assistants
+#   npx eslint src/ 2>&1 > security/eslint-summary.txt
