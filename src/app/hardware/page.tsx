@@ -4,6 +4,25 @@ const AGENT_MODE = process.env.AGENT_MODE ?? "simulation";
 
 const BOARDS = [
   {
+    id: "triage",
+    board: 0,
+    emoji: "🎯",
+    name: "Triage",
+    role: "Routing / Orchestration",
+    port: 8005,
+    ip: "192.168.1.55",
+    color: "#8B5CF6",
+    border: "border-violet-500/60",
+    bg: "bg-violet-500/10",
+    dot: "bg-violet-400",
+    triggers: "All incoming messages — entry point",
+    phase: "Live on laptop",
+    phaseColor: "text-green-400",
+    telegramBot: "@ChuTriage_bot",
+    laptopPort: 18791,
+    hardwarePhase: "Phase 5",
+  },
+  {
     id: "grace",
     board: 1,
     emoji: "💙",
@@ -16,8 +35,11 @@ const BOARDS = [
     bg: "bg-blue-500/10",
     dot: "bg-blue-400",
     triggers: "Distressed · Elderly · Injured",
-    phase: "Phase 1 — Arriving Mar 2026",
+    phase: "Board arriving Mar 2026",
     phaseColor: "text-blue-400",
+    telegramBot: "@ChuGrace_bot",
+    laptopPort: 18790,
+    hardwarePhase: "Phase 1",
   },
   {
     id: "swift",
@@ -32,8 +54,11 @@ const BOARDS = [
     bg: "bg-amber-500/5",
     dot: "bg-amber-400",
     triggers: "Urgent · Property · Vehicle",
-    phase: "Phase 2 — Pending validation",
-    phaseColor: "text-gray-500",
+    phase: "Live on laptop",
+    phaseColor: "text-green-400",
+    telegramBot: "@ChuSwift_bot",
+    laptopPort: 18792,
+    hardwarePhase: "Phase 2",
   },
   {
     id: "kara",
@@ -48,8 +73,11 @@ const BOARDS = [
     bg: "bg-emerald-500/5",
     dot: "bg-emerald-400",
     triggers: "Policy Questions · Coverage",
-    phase: "Phase 3 — Pending",
-    phaseColor: "text-gray-500",
+    phase: "Live on laptop",
+    phaseColor: "text-green-400",
+    telegramBot: "@ChuKaraKara_bot",
+    laptopPort: 18793,
+    hardwarePhase: "Phase 3",
   },
   {
     id: "phoenix",
@@ -64,24 +92,11 @@ const BOARDS = [
     bg: "bg-red-500/5",
     dot: "bg-red-400",
     triggers: "Angry · Legal Threats · Complex",
-    phase: "Phase 4 — Pending",
-    phaseColor: "text-gray-500",
-  },
-  {
-    id: "triage",
-    board: 5,
-    emoji: "🎯",
-    name: "Triage",
-    role: "Routing / Orchestration",
-    port: 8005,
-    ip: "192.168.1.55",
-    color: "#8B5CF6",
-    border: "border-violet-500/30",
-    bg: "bg-violet-500/5",
-    dot: "bg-violet-400",
-    triggers: "All incoming messages",
-    phase: "Phase 5 — Pending",
-    phaseColor: "text-gray-500",
+    phase: "Bot pending (BotFather)",
+    phaseColor: "text-amber-400",
+    telegramBot: "@ChuPhoenix_bot",
+    laptopPort: 18794,
+    hardwarePhase: "Phase 4",
   },
 ];
 
@@ -115,18 +130,56 @@ export default function HardwarePage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
+
+        {/* Telegram Live Now banner */}
+        <div className="bg-green-900/20 border border-green-700/40 rounded-2xl p-5">
+          <div className="flex items-start gap-4 mb-4">
+            <div className="text-2xl mt-0.5">📱</div>
+            <div>
+              <div className="text-green-400 font-semibold text-sm mb-1 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse inline-block" />
+                Telegram Multi-Bot Live — Running on Laptop (Mar 2026)
+              </div>
+              <p className="text-green-200/60 text-sm">
+                4 of 5 agents are live on Telegram right now, running as PicoClaw instances on this laptop.
+                This is the prototype proving the pattern before hardware arrives.
+                Each agent is an independent PicoClaw process — identical architecture to the target Sipeed board deployment.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+            {[
+              { bot: "@ChuTriage_bot", agent: "Triage 🎯", status: "live", port: 18791 },
+              { bot: "@ChuGrace_bot", agent: "Grace 💙", status: "live", port: 18790 },
+              { bot: "@ChuSwift_bot", agent: "Swift ⚡", status: "live", port: 18792 },
+              { bot: "@ChuKaraKara_bot", agent: "Kara 📚", status: "live", port: 18793 },
+              { bot: "@ChuPhoenix_bot", agent: "Phoenix 🔥", status: "pending", port: 18794 },
+            ].map((b) => (
+              <div key={b.bot} className={`rounded-xl p-2.5 border ${b.status === "live" ? "bg-green-900/30 border-green-700/40" : "bg-gray-800/40 border-gray-700/40"}`}>
+                <div className={`font-semibold mb-0.5 ${b.status === "live" ? "text-green-300" : "text-gray-500"}`}>{b.agent}</div>
+                <div className="text-gray-400 font-mono text-xs">{b.bot}</div>
+                <div className="text-gray-600 mt-0.5">:{b.port}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-green-700/20 text-xs text-gray-500">
+            <strong className="text-gray-400">How handoff works:</strong> Message @ChuTriage_bot → it reads your situation → routes you to the right specialist with a{" "}
+            <code className="bg-gray-800 text-green-300 px-1 rounded">[Context: ...]</code> brief to paste → specialist opens knowing your situation, no repetition needed.
+          </div>
+        </div>
+
         {/* Coming-soon banner in simulation mode */}
         {!isHardware && (
           <div className="bg-amber-900/20 border border-amber-700/40 rounded-2xl p-5 flex items-start gap-4">
             <div className="text-2xl mt-0.5">🔌</div>
             <div>
               <div className="text-amber-400 font-semibold text-sm mb-1">
-                Board 1 arriving March 2026 — phased rollout
+                Board 1 arriving March 2026 — phased hardware rollout
               </div>
               <p className="text-amber-200/60 text-sm">
-                1 Sipeed LicheeRV Nano W board is on order (arriving 19–27 March 2026). <strong className="text-amber-300">Grace</strong> will be the first agent deployed on hardware.
-                Once validated, additional boards will be ordered one at a time — one per agent — until the full cluster is running.
-                Set <code className="bg-gray-800 text-amber-300 px-1 rounded text-xs">AGENT_MODE=hardware</code> and <code className="bg-gray-800 text-amber-300 px-1 rounded text-xs">GRACE_URL</code> to activate hardware mode for Grace while others remain in simulation.
+                1 Sipeed LicheeRV Nano W board is on order (arriving 19–27 March 2026). <strong className="text-amber-300">Grace</strong> will be the first agent moved from laptop to hardware.
+                The pattern is already proven on the laptop — moving to a board is just changing where PicoClaw runs.
+                Set <code className="bg-gray-800 text-amber-300 px-1 rounded text-xs">AGENT_MODE=hardware</code> and <code className="bg-gray-800 text-amber-300 px-1 rounded text-xs">GRACE_URL</code> to activate hardware mode for Grace while others remain on the laptop.
               </p>
             </div>
           </div>
@@ -198,24 +251,26 @@ export default function HardwarePage() {
                 {/* Board info */}
                 <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Board</span>
-                    <span className="text-gray-300">#{board.board}</span>
+                    <span className="text-gray-500">Telegram</span>
+                    <span className="text-blue-400 font-mono">{board.telegramBot}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">IP / Port</span>
+                    <span className="text-gray-500">Laptop port</span>
+                    <span className="text-gray-300 font-mono">:{board.laptopPort}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Target board</span>
                     <span className="text-gray-300 font-mono">
                       {board.ip}:{board.port}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Rollout</span>
-                    <span className={board.phaseColor}>{board.phase}</span>
+                    <span className="text-gray-500">Hardware</span>
+                    <span className="text-gray-500">{board.hardwarePhase}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-500">Status</span>
-                    <span className={isHardware ? "text-green-400" : "text-amber-400"}>
-                      {isHardware ? "Live board" : "Simulated"}
-                    </span>
+                    <span className={board.phaseColor}>{board.phase}</span>
                   </div>
                   {isHardware && (
                     <>
@@ -279,6 +334,19 @@ export default function HardwarePage() {
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
             Network Topology
           </h2>
+          <div className="mb-3 text-xs font-semibold text-green-400 uppercase tracking-wider">Now (laptop prototype)</div>
+          <pre className="text-xs text-gray-400 font-mono leading-relaxed overflow-x-auto mb-6">
+{`  Telegram User
+       |
+  @ChuTriage_bot (:18791) ──routes──► @ChuGrace_bot   (:18790)  💙 Grace
+                                   ──routes──► @ChuSwift_bot  (:18792)  ⚡ Swift
+                                   ──routes──► @ChuKaraKara_bot (:18793) 📚 Kara
+                                   ──routes──► @ChuPhoenix_bot (:18794) 🔥 Phoenix (pending)
+                                              │
+                                        All running as PicoClaw processes on this laptop
+                                        OAuth → Anthropic Claude API (claude.ai subscription)`}
+          </pre>
+          <div className="mb-3 text-xs font-semibold text-cyan-400 uppercase tracking-wider">Target (hardware cluster)</div>
           <pre className="text-xs text-gray-400 font-mono leading-relaxed overflow-x-auto">
 {`  Board #1          Board #2          Board #3          Board #4          Board #5
   Grace 💙           Swift ⚡           Kara 📚            Phoenix 🔥         Triage 🎯
@@ -292,8 +360,8 @@ export default function HardwarePage() {
                                        localhost:3000`}
           </pre>
           <p className="text-xs text-gray-500 mt-3">
-            In simulation mode all agents run as functions inside this Next.js process.
-            In hardware mode the dashboard POSTs each message to the corresponding board IP over WiFi.
+            Moving an agent from laptop to hardware = same PicoClaw binary, same config, different machine.
+            The Telegram bot token and Claude OAuth stay identical — only the host changes.
           </p>
         </div>
 

@@ -1,12 +1,84 @@
-# Hardware Setup — Sipeed LicheeRV Nano W + PicoClaw
+# Hardware Setup — Claims Triage AI Agents
 
-> This document is written for Claude Code to follow when Mark says "the board has arrived".
-> It covers everything needed to go from unboxed board to a live Grace agent on Telegram,
-> matching the same OpenClaw/Telegram pattern used in Claims-Phoenix.
+> This document is written for Claude Code to follow.
+> It covers both the current laptop setup and the target Sipeed board setup.
 
 ---
 
-## What You Have
+## Current State (March 2026)
+
+All agents are running on the **laptop via PicoClaw**, proving the pattern before hardware arrives.
+
+### Live Telegram Bots
+
+| Agent | Bot | Laptop Port | Status |
+|-------|-----|-------------|--------|
+| Triage 🎯 | @ChuTriage_bot | 18791 | ✅ Live |
+| Grace 💙 | @ChuGrace_bot | 18790 | ✅ Live |
+| Swift ⚡ | @ChuSwift_bot | 18792 | ✅ Live |
+| Kara 📚 | @ChuKaraKara_bot | 18793 | ✅ Live |
+| Phoenix 🔥 | @ChuPhoenix_bot | 18794 | ⏳ BotFather throttled |
+
+### How to Start All Bots
+
+```bash
+~/start-chubots.sh
+```
+
+This starts all PicoClaw instances. Logs go to `/tmp/chubots/`.
+
+To stop all:
+```bash
+pkill -f 'picoclaw gateway'
+```
+
+### Config Locations
+
+| Agent | PicoClaw Home | Config |
+|-------|--------------|--------|
+| Grace | `~/.picoclaw/` | `~/.picoclaw/config.json` |
+| Triage | `~/.picoclaw-triage/` | `~/.picoclaw-triage/config.json` |
+| Swift | `~/.picoclaw-swift/` | `~/.picoclaw-swift/config.json` |
+| Kara | `~/.picoclaw-kara/` | `~/.picoclaw-kara/config.json` |
+| Phoenix | `~/.picoclaw-phoenix/` | `~/.picoclaw-phoenix/config.json` |
+
+### Auth
+
+All instances use Claude.ai OAuth (no API credits needed). Auth is in `~/.picoclaw/auth.json` — copied to each agent directory.
+
+If the OAuth token expires, re-authenticate:
+```bash
+~/bin/picoclaw auth login --provider anthropic --setup-token
+# Paste output of: claude setup-token
+# Then copy auth.json to all agent directories:
+cp ~/.picoclaw/auth.json ~/.picoclaw-triage/auth.json
+cp ~/.picoclaw/auth.json ~/.picoclaw-swift/auth.json
+cp ~/.picoclaw/auth.json ~/.picoclaw-kara/auth.json
+cp ~/.picoclaw/auth.json ~/.picoclaw-phoenix/auth.json
+```
+
+### Context Handoff Flow
+
+1. Customer messages **@ChuTriage_bot**
+2. Triage reads situation, picks specialist, replies with the bot handle + a `[Context: ...]` line
+3. Customer taps the specialist bot, pastes the context line as first message
+4. Specialist reads context silently, opens with a personalised response — no repetition
+
+---
+
+## API Keys
+
+| Key | File | Notes |
+|-----|------|-------|
+| Anthropic (picoClaw_key) | `C:\Users\markl\Downloads\picoclaw-project\picoClaw.txt` | ⚠️ No credits — using OAuth instead |
+| @ChuGrace_bot token | `C:\Users\markl\Downloads\picoclaw-project\chuGrace_bot.txt` | In `~/.picoclaw/config.json` |
+| All ChuBots tokens | `C:\Users\markl\Downloads\picoclaw-project\ChuBots.txt` | In respective config.json files |
+
+---
+
+## Target Hardware — Sipeed LicheeRV Nano W
+
+### What You Have
 
 | Item | Detail |
 |------|--------|
@@ -15,142 +87,79 @@
 | RAM | 256 MB DDR3 |
 | Network | WiFi 6 + BT 5.2 |
 | Power | USB-C, 1–2W |
-| OS | Buildroot Linux (on SD card — already flashed) |
-| SD card | Already flashed with firmware `2026-01-14-16-03-d4003f.img` |
+| OS | Buildroot Linux (SD card — already flashed) |
+| SD card | Flashed with `2026-01-14-16-03-d4003f.img` |
 | PicoClaw | v0.2.2 — `picoclaw_riscv64.deb` |
 
-## How This Mirrors OpenClaw
+### Phased Rollout
 
-OpenClaw on the laptop worked like this:
+| Phase | Board | Agent | IP | Port | Bot |
+|-------|-------|-------|----|------|-----|
+| Phase 1 | Board 1 | Grace 💙 | 192.168.1.51 | 8001 | @ChuGrace_bot |
+| Phase 2 | Board 2 | Swift ⚡ | 192.168.1.52 | 8002 | @ChuSwift_bot |
+| Phase 3 | Board 3 | Kara 📚 | 192.168.1.53 | 8003 | @ChuKaraKara_bot |
+| Phase 4 | Board 4 | Phoenix 🔥 | 192.168.1.54 | 8004 | @ChuPhoenix_bot |
+| Phase 5 | Board 5 | Triage 🎯 | 192.168.1.55 | 8005 | @ChuTriage_bot |
 
-```
-Telegram API → OpenClaw (laptop) → Claude API → response → Telegram API
-```
+### What Moving to Hardware Means
 
-PicoClaw on the board is identical:
+Moving an agent from laptop to board = identical steps, different machine. The Telegram bot token and Claude OAuth are unchanged. Only the host changes.
 
-```
-Telegram API → PicoClaw (Sipeed board) → Claude API → response → Telegram API
-```
-
-Config in OpenClaw was `clawdbot.json` with `botToken` + API key.
-Config in PicoClaw is a `.env` file with `TELEGRAM_BOT_TOKEN` + `ANTHROPIC_API_KEY`.
-Same pattern, simpler syntax.
-
----
-
-## API Keys Needed
-
-| Key | Where to get it | Already saved? |
-|-----|----------------|----------------|
-| `ANTHROPIC_API_KEY` | console.anthropic.com | Yes — `C:\Users\markl\Downloads\picoclaw-project\picoClaw.txt` (needs credits added) |
-| `TELEGRAM_BOT_TOKEN` | @BotFather — bot is **@ChuGrace_bot** | Yes — `C:\Users\markl\Downloads\picoclaw-project\chuGrace_bot.txt` |
+On the laptop: `PICOCLAW_HOME=~/.picoclaw-grace ~/bin/picoclaw gateway`
+On the board: `picoclaw gateway` (installed system-wide via dpkg)
 
 ---
 
-## Step-by-Step Setup (do this when board arrives)
+## Board Setup — Step by Step (When Board Arrives)
 
 ### Step 1 — Physical setup
 
-1. Insert SD card into the slot on the **underside** of the board
-2. Connect USB-C power cable
+1. Insert SD card into underside slot
+2. Connect USB-C power
 3. Wait 60 seconds for boot
 
-### Step 2 — Find the board's IP address
+### Step 2 — Find IP
 
-Log into your router admin panel and look at DHCP leases for a new device.
-The hostname will likely be `licheervnano` or similar.
-Tell me the IP — I'll use it for the rest of setup.
+Check router DHCP leases for `licheervnano`. Tell Claude Code the IP — setup continues from there.
+Recommended: set static DHCP reservation at `192.168.1.51`.
 
-Expected IP: `192.168.1.51` (if you set a DHCP reservation — recommended)
-
-### Step 3 — SSH into the board
+### Step 3 — SSH in
 
 ```bash
 ssh root@192.168.1.51
-# Default password: root (or blank — try both)
+# Password: root (or blank)
 ```
 
-### Step 4 — Set up WiFi (if not already connected via ethernet)
+### Step 4 — WiFi (if needed)
 
 ```bash
-# Check if connected
 ping -c 3 8.8.8.8
-
-# If not, configure WiFi
-wpa_passphrase "YourWiFiSSID" "YourWiFiPassword" >> /etc/wpa_supplicant.conf
+# If not connected:
+wpa_passphrase "YourSSID" "YourPassword" >> /etc/wpa_supplicant.conf
 wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf
 udhcpc -i wlan0
 ```
 
-### Step 5 — Install PicoClaw v0.2.2 (RISC-V 64-bit)
+### Step 5 — Install PicoClaw (RISC-V 64-bit)
 
 ```bash
-# Download the correct binary for this board
 wget https://github.com/sipeed/picoclaw/releases/download/v0.2.2/picoclaw_riscv64.deb
-
-# Install it
 dpkg -i picoclaw_riscv64.deb
-
-# Verify
-picoclaw --version
+picoclaw version
 ```
 
-### Step 6 — Configure PicoClaw for Grace
+### Step 6 — Copy config from laptop
 
-Create the environment config:
+The config from `~/.picoclaw/` (Grace) goes to the board. Easiest via scp:
 
 ```bash
-mkdir -p /etc/picoclaw
-cat > /etc/picoclaw/.env << 'EOF'
-# AI Provider — Anthropic (add credits at console.anthropic.com/settings/billing)
-# Key saved in: C:\Users\markl\Downloads\picoclaw-project\picoClaw.txt
-ANTHROPIC_API_KEY=<see picoClaw.txt>
-
-# Telegram — @ChuGrace_bot
-# Token saved in: C:\Users\markl\Downloads\picoclaw-project\chuGrace_bot.txt
-TELEGRAM_BOT_TOKEN=<see chuGrace_bot.txt>
-
-# Timezone
-TZ=Asia/Hong_Kong
-EOF
+# From laptop:
+scp ~/.picoclaw/config.json root@192.168.1.51:~/.picoclaw/config.json
+scp ~/.picoclaw/auth.json root@192.168.1.51:~/.picoclaw/auth.json
+scp -r ~/.picoclaw/workspace root@192.168.1.51:~/.picoclaw/workspace
 ```
 
-Create Grace's system prompt config:
-
-```bash
-cat > /etc/picoclaw/system-prompt.txt << 'EOF'
-You are Grace, a warm and deeply empathetic claims specialist at Chubb Insurance,
-specialising in supporting distressed customers during Hong Kong typhoon events.
-
-Your personality: patient, gentle, never rushes, validates feelings before facts.
-You speak like a caring professional who genuinely wants to help.
-
-Your approach:
-- Always check safety first before anything else
-- Acknowledge feelings: "That must have been so frightening" before practical steps
-- Use short, simple sentences - never overwhelm
-- Maximum 3 short paragraphs per response
-- Mirror the customer's language (if they write Chinese, respond in Chinese too)
-- Always available to transfer to a human: "If you'd prefer to speak with a person, I can arrange that right away"
-
-GL8 compliance: You are an AI assistant. State this clearly on first response.
-
-Opening (first message): "Hello, I'm Grace, an AI claims specialist at Chubb. I'm here to help you through this — please take your time. 你好，我係Grace，AI理賠專員。我哋慢慢來。"
-EOF
-```
-
-### Step 7 — Run PicoClaw (test first)
-
-```bash
-# Test run — ctrl+C to stop
-cd /etc/picoclaw && picoclaw start --env .env
-
-# You should see it connect to Telegram and be ready
-# Send a message to the Telegram bot to test
-```
-
-### Step 8 — Set up systemd for auto-restart (mirrors OpenClaw's clawdbot-gateway.service)
+### Step 7 — systemd service
 
 ```bash
 cat > /etc/systemd/system/picoclaw-grace.service << 'EOF'
@@ -161,9 +170,8 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/etc/picoclaw
-EnvironmentFile=/etc/picoclaw/.env
-ExecStart=/usr/bin/picoclaw start
+WorkingDirectory=/root/.picoclaw
+ExecStart=/usr/bin/picoclaw gateway
 Restart=always
 RestartSec=5s
 StandardOutput=journal
@@ -176,52 +184,25 @@ EOF
 systemctl daemon-reload
 systemctl enable picoclaw-grace
 systemctl start picoclaw-grace
-
-# Check status
 systemctl status picoclaw-grace
 ```
 
-### Step 9 — Set up health check cron (mirrors Claims-Phoenix crontab)
+### Step 8 — Health cron
 
 ```bash
-# Add cron to auto-restart if service dies
 (crontab -l 2>/dev/null; echo "*/5 * * * * systemctl is-active --quiet picoclaw-grace || systemctl restart picoclaw-grace") | crontab -
 ```
 
-### Step 10 — Wire board into Claims-Triage-AI-Assistants dashboard
+### Step 9 — Wire into dashboard
 
-On your laptop, update `.env.local`:
+On the laptop, update `.env.local`:
 
 ```bash
 AGENT_MODE=hardware
 GRACE_URL=http://192.168.1.51:8001
-# Others stay in simulation:
-# SWIFT_URL, KARA_URL, PHOENIX_URL, TRIAGE_URL — leave unset
 ```
 
-Restart the Next.js dashboard:
-```bash
-npm run dev
-```
-
-The triage dashboard will now show Grace as "Live board" and all other agents as "Simulated".
-
----
-
-## Verify Everything Works
-
-```bash
-# On board — check service
-systemctl status picoclaw-grace
-journalctl -u picoclaw-grace -f
-
-# On laptop — check board health
-curl http://192.168.1.51:8001/health
-
-# Send test message to Telegram bot
-# Grace should respond via Telegram AND the conversation should appear
-# in the triage dashboard at localhost:3000/triage
-```
+Restart `npm run dev` — Grace shows as "Live board" on the dashboard.
 
 ---
 
@@ -232,41 +213,7 @@ curl http://192.168.1.51:8001/health
 | Can't SSH | Check IP in router DHCP, try `ssh root@licheervnano.local` |
 | No WiFi | Run `ip link` — interface may be `wlan0` or `wlan1` |
 | picoclaw not found after install | Try `which picoclaw` or `/usr/local/bin/picoclaw` |
-| Service fails to start | `journalctl -u picoclaw-grace -n 50` to see errors |
-| API key rejected | Add credits at console.anthropic.com/settings/billing |
-| Telegram not responding | Confirm bot token at t.me/BotFather — `/mybots` |
-| Board not reachable from laptop | Confirm both on same WiFi network / hotspot |
-
----
-
-## API Keys Reference
-
-When Mark says "add a new API key", update `/etc/picoclaw/.env` on the board:
-
-```bash
-# SSH into board
-ssh root@192.168.1.51
-
-# Edit config
-nano /etc/picoclaw/.env
-
-# Restart service to pick up new key
-systemctl restart picoclaw-grace
-```
-
-And update `Claims-Triage-AI-Assistants/.env.local` on the laptop for the dashboard.
-
----
-
-## What Comes Next (Boards 2–5)
-
-Once Grace is validated on Board 1, repeat for:
-
-| Board | Agent | IP | Port | System prompt |
-|-------|-------|----|------|---------------|
-| 2 | Swift ⚡ | 192.168.1.52 | 8002 | Fast-track, numbered lists |
-| 3 | Kara 📚 | 192.168.1.53 | 8003 | FAQ, policy questions |
-| 4 | Phoenix 🔥 | 192.168.1.54 | 8004 | De-escalation, anger |
-| 5 | Triage 🎯 | 192.168.1.55 | 8005 | JSON routing only |
-
-Each board is identical setup — just different system prompt and port.
+| Service fails to start | `journalctl -u picoclaw-grace -n 50` |
+| OAuth expired | Re-run `picoclaw auth login --setup-token` and copy `auth.json` |
+| Telegram not responding | Confirm bot token with @BotFather — `/mybots` |
+| Board unreachable | Confirm both on same WiFi / hotspot |

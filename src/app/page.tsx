@@ -61,9 +61,17 @@ const NAV_TILES = [
     href: "/hardware",
     emoji: "🔌",
     title: "Hardware Architecture",
-    desc: "Board-per-agent architecture. Board 1 (Grace) arriving March 2026 — prove it works, then order more.",
+    desc: "4 agents live on Telegram now (laptop). Board 1 arriving Mar 2026 — move to hardware one agent at a time.",
     color: "from-cyan-700 to-cyan-900",
     border: "border-cyan-600",
+  },
+  {
+    href: "/kanban",
+    emoji: "📌",
+    title: "Project Kanban",
+    desc: "Done, in progress, up next, and backlog. Live status of the build.",
+    color: "from-rose-700 to-rose-900",
+    border: "border-rose-600",
   },
 ];
 
@@ -154,22 +162,24 @@ export default function HomePage() {
             <div className="flex-1 min-w-0">
               <h2 className="text-base font-bold text-white mb-1 flex items-center gap-2">
                 Hardware Roadmap — Phased Rollout
-                <span className="text-xs font-normal bg-amber-900/40 border border-amber-700/40 text-amber-400 px-2 py-0.5 rounded-full">
-                  Board 1 arriving Mar 2026
+                <span className="text-xs font-normal bg-green-900/40 border border-green-700/40 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
+                  4 bots live on Telegram
                 </span>
               </h2>
               <p className="text-sm text-gray-400 mb-4">
-                Currently running in <span className="text-amber-400 font-semibold">simulation mode</span> — all agents run in the cloud via Vercel, no laptop required.
-                The goal: one dedicated Sipeed LicheeRV Nano W board per agent. Starting with <span className="text-blue-400 font-semibold">Grace</span> — validate it works, then order more.
+                4 agents are <span className="text-green-400 font-semibold">live on Telegram</span> right now via PicoClaw on this laptop —
+                @ChuTriage_bot routes to @ChuGrace_bot, @ChuSwift_bot, @ChuKaraKara_bot.
+                Next step: move each agent from laptop to a dedicated <span className="text-cyan-400 font-semibold">Sipeed LicheeRV Nano W</span> board as they arrive (~$20 each).
               </p>
               {/* Mini board diagram */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {[
-                  { emoji: "💙", name: "Grace",   board: 1, color: "border-blue-500/70 bg-blue-900/30 text-blue-400", phase: "Arriving" },
-                  { emoji: "⚡", name: "Swift",   board: 2, color: "border-amber-500/30 bg-amber-900/10 text-amber-600", phase: "Phase 2" },
-                  { emoji: "📚", name: "Kara",    board: 3, color: "border-emerald-500/30 bg-emerald-900/10 text-emerald-600", phase: "Phase 3" },
-                  { emoji: "🔥", name: "Phoenix", board: 4, color: "border-red-500/30 bg-red-900/10 text-red-600", phase: "Phase 4" },
-                  { emoji: "🎯", name: "Triage",  board: 5, color: "border-violet-500/30 bg-violet-900/10 text-violet-600", phase: "Phase 5" },
+                  { emoji: "🎯", name: "Triage",  board: 0, color: "border-violet-500/70 bg-violet-900/30 text-violet-400", phase: "Live 📱" },
+                  { emoji: "💙", name: "Grace",   board: 1, color: "border-blue-500/70 bg-blue-900/30 text-blue-400", phase: "Live 📱" },
+                  { emoji: "⚡", name: "Swift",   board: 2, color: "border-amber-500/70 bg-amber-900/30 text-amber-400", phase: "Live 📱" },
+                  { emoji: "📚", name: "Kara",    board: 3, color: "border-emerald-500/70 bg-emerald-900/30 text-emerald-400", phase: "Live 📱" },
+                  { emoji: "🔥", name: "Phoenix", board: 4, color: "border-red-500/30 bg-red-900/10 text-red-600", phase: "Pending" },
                 ].map((b) => (
                   <div key={b.board} className={`border rounded-xl px-3 py-2 text-xs font-medium ${b.color}`}>
                     <div className="text-base mb-0.5">{b.emoji}</div>
