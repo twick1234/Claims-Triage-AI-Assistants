@@ -43,8 +43,8 @@ Same pattern, simpler syntax.
 
 | Key | Where to get it | Already saved? |
 |-----|----------------|----------------|
-| `ANTHROPIC_API_KEY` | console.anthropic.com | Yes — `C:\Users\markl\Downloads\picoclaw-project\picoClaw.txt` (needs credits) |
-| `TELEGRAM_BOT_TOKEN` | @BotFather on Telegram | Yes — `C:\Users\markl\Downloads\picoclaw-project\PicoClawBot.txt` |
+| `ANTHROPIC_API_KEY` | console.anthropic.com | Yes — `C:\Users\markl\Downloads\picoclaw-project\picoClaw.txt` (needs credits added) |
+| `TELEGRAM_BOT_TOKEN` | @BotFather — bot is **@ChuGrace_bot** | Yes — `C:\Users\markl\Downloads\picoclaw-project\chuGrace_bot.txt` |
 
 ---
 
@@ -103,11 +103,13 @@ Create the environment config:
 ```bash
 mkdir -p /etc/picoclaw
 cat > /etc/picoclaw/.env << 'EOF'
-# AI Provider — Anthropic
-ANTHROPIC_API_KEY=YOUR_KEY_HERE
+# AI Provider — Anthropic (add credits at console.anthropic.com/settings/billing)
+# Key saved in: C:\Users\markl\Downloads\picoclaw-project\picoClaw.txt
+ANTHROPIC_API_KEY=<see picoClaw.txt>
 
-# Telegram channel
-TELEGRAM_BOT_TOKEN=YOUR_BOT_TOKEN_HERE
+# Telegram — @ChuGrace_bot
+# Token saved in: C:\Users\markl\Downloads\picoclaw-project\chuGrace_bot.txt
+TELEGRAM_BOT_TOKEN=<see chuGrace_bot.txt>
 
 # Timezone
 TZ=Asia/Hong_Kong
