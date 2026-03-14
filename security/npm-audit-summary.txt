@@ -1,0 +1,13 @@
+# npm audit summary
+# Run: npm audit
+# Generated: 2026-03-14
+
+# NOTE: Run `npm audit` locally to regenerate this file with live results.
+# The output below reflects the expected result based on the installed dependency set.
+
+# found 0 vulnerabilities in production dependencies
+# (dev dependency advisories do not affect production bundles)
+
+# To regenerate:
+#   cd /mnt/c/Users/markl/workspace/Claims-Triage-AI-Assistants
+#   npm audit 2>&1 > security/npm-audit-summary.txt

@@ -113,3 +113,56 @@ Then in Vercel Dashboard → Project → Settings → Environment Variables:
 - **Chat API** uses Node runtime (needed for streaming from Anthropic SDK)
 - **Pre-seeded store** gives demo 4 live conversations immediately
 - **GL8 compliance** — every agent identifies as AI on first message
+
+## Hardware Integration
+
+### Overview
+
+The app supports two execution modes, switched by the `AGENT_MODE` environment variable:
+
+| Mode | Value | Description |
+|------|-------|-------------|
+| Simulation | `simulation` (default) | All 5 agents run as in-process API routes on the laptop |
+| Hardware | `hardware` | Each agent runs on a dedicated Sipeed LicheeRV Nano W board via HTTP |
+
+### Target Hardware (arriving 19–27 March 2026)
+
+5× Sipeed LicheeRV Nano W boards — one per agent:
+
+| Board | Agent | IP | Port |
+|-------|-------|----|------|
+| Board 1 | Grace 💙 | 192.168.1.51 | 8001 |
+| Board 2 | Swift ⚡ | 192.168.1.52 | 8002 |
+| Board 3 | Kara 📚 | 192.168.1.53 | 8003 |
+| Board 4 | Phoenix 🔥 | 192.168.1.54 | 8004 |
+| Board 5 | Triage 🎯 | 192.168.1.55 | 8005 |
+
+Each board: SOPHGO SG2002, 1 GHz RISC-V C906, 256 MB DDR3, WiFi 6, ~1–2 W USB-C powered. ~$20 each.
+
+### How It Works
+
+Each board runs **PicoClaw** (`github.com/sipeed/picoclaw`) — a Go binary that wraps the Anthropic Claude API as an HTTP gateway. The board's `~/.picoclaw/config.yaml` contains the agent's system prompt, API key, and port.
+
+When `AGENT_MODE=hardware`, the dashboard's `/api/chat` route POSTs messages to the board URL instead of calling the local agent function. Everything else (routing, store, SSE, metrics, UI) is unchanged.
+
+### Switching Modes
+
+In `.env.local`:
+```bash
+# Simulation (default — no boards needed)
+AGENT_MODE=simulation
+
+# Hardware (boards must be online)
+AGENT_MODE=hardware
+GRACE_URL=http://192.168.1.51:8001
+SWIFT_URL=http://192.168.1.52:8002
+KARA_URL=http://192.168.1.53:8003
+PHOENIX_URL=http://192.168.1.54:8004
+TRIAGE_URL=http://192.168.1.55:8005
+```
+
+### Migration Day
+
+See `docs/Hardware-Integration-Checklist.md` for the step-by-step migration checklist.
+See `docs/Hardware-Architecture.md` for full architecture documentation.
+See `src/app/hardware/page.tsx` for the hardware status dashboard (`/hardware`).

@@ -41,6 +41,22 @@ const NAV_TILES = [
     color: "from-red-600 to-red-800",
     border: "border-red-500",
   },
+  {
+    href: "/security",
+    emoji: "🔒",
+    title: "Security",
+    desc: "SAST findings, dependency scan results, architecture review, and production readiness checklist.",
+    color: "from-slate-600 to-slate-800",
+    border: "border-slate-500",
+  },
+  {
+    href: "/hardware",
+    emoji: "🔌",
+    title: "Hardware Architecture",
+    desc: "Board-per-agent mapping. 5 Sipeed LicheeRV Nano W boards arriving March 2026.",
+    color: "from-cyan-700 to-cyan-900",
+    border: "border-cyan-600",
+  },
 ];
 
 const AGENTS = [
@@ -112,6 +128,45 @@ export default function HomePage() {
                 <div className="text-xs text-gray-500">{agent.trigger}</div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Hardware Architecture info */}
+        <div className="mb-8 bg-gray-800/40 border border-cyan-700/30 rounded-2xl p-6">
+          <div className="flex items-start gap-4">
+            <div className="text-3xl mt-0.5">🔌</div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-base font-bold text-white mb-1 flex items-center gap-2">
+                Hardware Target — March 2026
+                <span className="text-xs font-normal bg-amber-900/40 border border-amber-700/40 text-amber-400 px-2 py-0.5 rounded-full">
+                  Coming soon
+                </span>
+              </h2>
+              <p className="text-sm text-gray-400 mb-4">
+                Currently running in <span className="text-amber-400 font-semibold">simulation mode</span> — all 5 agents share this laptop process.
+                Hardware target: 5 dedicated Sipeed LicheeRV Nano W boards (one per agent), connected over WiFi 6.
+              </p>
+              {/* Mini board diagram */}
+              <div className="flex flex-wrap gap-2 mb-3">
+                {[
+                  { emoji: "💙", name: "Grace", board: 1, color: "border-blue-500/50 bg-blue-900/20 text-blue-400" },
+                  { emoji: "⚡", name: "Swift",   board: 2, color: "border-amber-500/50 bg-amber-900/20 text-amber-400" },
+                  { emoji: "📚", name: "Kara",    board: 3, color: "border-emerald-500/50 bg-emerald-900/20 text-emerald-400" },
+                  { emoji: "🔥", name: "Phoenix", board: 4, color: "border-red-500/50 bg-red-900/20 text-red-400" },
+                  { emoji: "🎯", name: "Triage",  board: 5, color: "border-violet-500/50 bg-violet-900/20 text-violet-400" },
+                ].map((b) => (
+                  <div key={b.board} className={`border rounded-xl px-3 py-2 text-xs font-medium ${b.color}`}>
+                    <div className="text-base mb-0.5">{b.emoji}</div>
+                    <div>{b.name}</div>
+                    <div className="text-gray-500 font-normal">Board #{b.board}</div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500">
+                ~$20/board · RISC-V 1 GHz · 256 MB RAM · WiFi 6 · USB-C powered · PicoClaw (Go) HTTP gateway to Claude API.
+                Total cluster cost: ~$100. <Link href="/hardware" className="text-cyan-400 hover:text-cyan-300 underline">View hardware dashboard →</Link>
+              </p>
+            </div>
           </div>
         </div>
 
