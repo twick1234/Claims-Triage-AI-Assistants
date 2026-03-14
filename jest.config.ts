@@ -2,7 +2,7 @@ import type { Config } from 'jest';
 
 const config: Config = {
   testEnvironment: 'jsdom',
-  setupFilesAfterFramework: ['<rootDir>/src/test/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
