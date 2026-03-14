@@ -513,7 +513,7 @@ Rules: grace=distress/elderly/injured · swift=urgent property or vehicle · kar
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6">
             <h3 className="font-bold text-white text-sm mb-4">PicoClaw on the Sipeed Board — Same Pattern, Smaller Box</h3>
             <p className="text-gray-400 text-xs leading-relaxed mb-4">
-              The Sipeed LicheeRV Nano W (256MB RAM, 1GHz RISC-V) <strong className="text-red-400">cannot run an LLM locally</strong> — it is far too small. Even the smallest useful language models need 4GB+ RAM. The board acts as the relay, exactly like the laptop did — but smaller, cheaper, and purpose-built.
+              PicoClaw on the board works <strong className="text-white">identically to OpenClaw on the laptop</strong> — it is the same pattern, just on a $20 chip instead of a full computer. The board has WiFi 6 and makes the same outbound HTTPS call to the Claude API that the laptop was making. Neither the laptop nor the board runs AI locally — both are relays. The AI always runs on Anthropic&apos;s servers.
             </p>
             <div className="font-mono text-xs text-gray-400 bg-gray-950 rounded-xl p-4 leading-relaxed mb-4">
               <div><span className="text-blue-400">Telegram API</span> → <span className="text-gray-300">free, delivers message to PicoClaw on board</span></div>
