@@ -27,6 +27,6 @@ export const KARA_CONFIG = {
   label: 'Kara',
   emoji: '📚',
   color: '#10B981',
-  model: 'claude-sonnet-4-20250514',
+  model: 'claude-sonnet-4-6',
   maxTokens: 512,
 };

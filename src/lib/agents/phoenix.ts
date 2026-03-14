@@ -21,6 +21,6 @@ export const PHOENIX_CONFIG = {
   label: 'Phoenix',
   emoji: '🔥',
   color: '#EF4444',
-  model: 'claude-sonnet-4-20250514',
+  model: 'claude-sonnet-4-6',
   maxTokens: 512,
 };

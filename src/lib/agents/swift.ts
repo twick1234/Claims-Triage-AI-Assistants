@@ -21,6 +21,6 @@ export const SWIFT_CONFIG = {
   label: 'Swift',
   emoji: '⚡',
   color: '#F59E0B',
-  model: 'claude-sonnet-4-20250514',
+  model: 'claude-sonnet-4-6',
   maxTokens: 512,
 };

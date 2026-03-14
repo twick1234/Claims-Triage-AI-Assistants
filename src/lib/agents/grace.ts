@@ -21,6 +21,6 @@ export const GRACE_CONFIG = {
   label: 'Grace',
   emoji: '💙',
   color: '#3B82F6',
-  model: 'claude-sonnet-4-20250514',
+  model: 'claude-sonnet-4-6',
   maxTokens: 512,
 };

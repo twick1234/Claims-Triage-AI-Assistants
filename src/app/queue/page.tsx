@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Conversation } from '@/lib/types';
 import { PriorityBadge } from '@/components/PriorityBadge';
@@ -18,6 +18,9 @@ export default function QueuePage() {
   const [queue, setQueue] = useState<Conversation[]>([]);
   const [active, setActive] = useState<Conversation | null>(null);
   const [loading, setLoading] = useState(false);
+  const [customerThinking, setCustomerThinking] = useState(false);
+  const [autoReply, setAutoReply] = useState(true);
+  const activeIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     fetchQueue();
@@ -25,12 +28,16 @@ export default function QueuePage() {
     evtSource.addEventListener('queue_updated', () => fetchQueue());
     evtSource.addEventListener('conversation_updated', (e) => {
       const data = JSON.parse(e.data) as Conversation;
-      if (active?.id === data.id) setActive(data);
+      if (activeIdRef.current === data.id) setActive(data);
     });
     evtSource.addEventListener('initial_state', () => fetchQueue());
     return () => evtSource.close();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    activeIdRef.current = active?.id ?? null;
+  }, [active?.id]);
 
   async function fetchQueue() {
     const res = await fetch('/api/queue');
@@ -53,14 +60,36 @@ export default function QueuePage() {
 
   async function sendOperatorMessage(text: string) {
     if (!active) return;
+
+    // Send operator message
     await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ conversationId: active.id, content: text, role: 'agent' }),
     });
+
     const refreshed = await fetch(`/api/conversations/${active.id}`);
     const updated = await refreshed.json();
     setActive(updated);
+
+    // Auto-generate customer reply if enabled
+    if (autoReply) {
+      setCustomerThinking(true);
+      // Small realistic delay before customer replies
+      await new Promise((r) => setTimeout(r, 1500 + Math.random() * 2000));
+      try {
+        await fetch('/api/queue/auto-reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ conversationId: active.id }),
+        });
+        // SSE will update the active conversation
+      } catch {
+        // silent
+      } finally {
+        setCustomerThinking(false);
+      }
+    }
   }
 
   async function resolve() {
@@ -83,6 +112,17 @@ export default function QueuePage() {
           <span className="bg-amber-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">
             {queue.length} waiting
           </span>
+          <div className="ml-auto flex items-center gap-3">
+            <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer select-none">
+              <div
+                onClick={() => setAutoReply((v) => !v)}
+                className={`w-8 h-4 rounded-full transition-colors relative ${autoReply ? 'bg-violet-600' : 'bg-gray-600'}`}
+              >
+                <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform ${autoReply ? 'translate-x-4' : 'translate-x-0.5'}`} />
+              </div>
+              Auto customer replies
+            </label>
+          </div>
         </div>
       </div>
 
@@ -117,7 +157,6 @@ export default function QueuePage() {
                   Wait: <span className="text-amber-400 font-semibold">{waitTimeLabel(c.metrics.waitTimeMs)}</span>
                 </div>
 
-                {/* Last routing reason */}
                 {c.routing.slice(-1)[0] && (
                   <p className="text-xs text-gray-500 mb-3 line-clamp-2">
                     {c.routing.slice(-1)[0].reasoning}
@@ -141,9 +180,15 @@ export default function QueuePage() {
           {active ? (
             <>
               <div className="p-4 border-b border-gray-800 bg-gray-900 flex items-center justify-between">
-                <div>
+                <div className="flex items-center gap-3">
                   <span className="font-bold text-white">{active.customerName}</span>
-                  <span className="text-xs text-gray-400 ml-3">Handling as Human Agent</span>
+                  <span className="text-xs text-gray-400">You are the human agent</span>
+                  {customerThinking && (
+                    <span className="text-xs text-violet-400 animate-pulse flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce" />
+                      {active.customerName} is typing...
+                    </span>
+                  )}
                 </div>
                 <button
                   onClick={resolve}
@@ -165,7 +210,10 @@ export default function QueuePage() {
           ) : (
             <div className="flex-1 flex items-center justify-center text-gray-500 text-sm flex-col gap-2">
               <div className="text-4xl">👤</div>
-              <div>Pick up a conversation from the queue</div>
+              <div className="font-medium text-gray-400">Pick up a conversation from the queue</div>
+              <div className="text-xs text-gray-600 max-w-xs text-center mt-1">
+                Type your responses as the human agent. AI will simulate realistic customer replies automatically.
+              </div>
             </div>
           )}
         </div>

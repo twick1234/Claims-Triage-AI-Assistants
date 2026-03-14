@@ -92,7 +92,20 @@ export async function routeConversation(conversation: Conversation): Promise<Rou
     };
   }
 
-  // LLM triage
+  // If already assigned to an AI specialist, keep them — don't re-triage via LLM.
+  // Only use LLM for the initial routing (when still in 'triage' state).
+  if (conversation.currentAgent !== 'triage') {
+    const decision: RoutingDecision = {
+      assignedAgent: conversation.currentAgent,
+      reasoning: 'Continuing with assigned agent',
+      confidence: 1.0,
+      triggers: ['sticky routing'],
+      timestamp: new Date().toISOString(),
+    };
+    return { agent: conversation.currentAgent, decision };
+  }
+
+  // LLM triage — only runs on first message (while currentAgent === 'triage')
   const conversationText = conversation.messages
     .filter((m) => m.role === 'customer' || m.role === 'agent')
     .map((m) => `${m.role === 'customer' ? 'Customer' : 'Agent'}: ${m.content}`)
@@ -109,7 +122,7 @@ export async function routeConversation(conversation: Conversation): Promise<Rou
   };
 
   let transferMessage: string | undefined;
-  if (triageResult.agent !== conversation.currentAgent) {
+  if ((triageResult.agent as AgentId) !== conversation.currentAgent) {
     transferMessage = `Transferring you to ${AGENT_LABEL[triageResult.agent as AgentId]}...`;
   }
 

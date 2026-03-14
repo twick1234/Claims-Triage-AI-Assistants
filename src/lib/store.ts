@@ -185,6 +185,149 @@ function seed() {
     language: 'en',
   };
   store.conversations.set(c4id, c4);
+
+  // 5. Sarah Lam — smashed window, scared (with-grace)
+  const c5id = 'demo-sarah-005';
+  const c5: Conversation = {
+    id: c5id,
+    customerId: 'cust-sarah',
+    customerName: 'Sarah Lam',
+    status: 'with-grace',
+    currentAgent: 'grace',
+    messages: [
+      makeMsg(c5id, 'customer', "The typhoon smashed my living room window. There's glass everywhere and rain coming in. I don't know what to do, I'm shaking.", undefined, 6),
+      makeMsg(c5id, 'agent', "Hello, I'm Grace, an AI claims specialist at Chubb. I'm here to help you — please take a breath. Are you physically safe and away from the broken glass?", 'grace', 5),
+      makeMsg(c5id, 'customer', "Yes I moved to the bedroom. I'm so scared, the wind is really loud.", undefined, 4),
+      makeMsg(c5id, 'agent', "You're safe in the bedroom and that's exactly the right thing to do. The glass and the noise are frightening but you are okay. I'm here with you.\n\nDo not go near the window — we'll handle the claim once you're settled. Can you tell me your policy number when you're ready? No rush at all.", 'grace', 3),
+    ],
+    routing: [
+      {
+        assignedAgent: 'grace',
+        reasoning: 'Customer is scared, shaking, and overwhelmed — needs calm and safety check before anything else',
+        confidence: 0.97,
+        triggers: ['scared', 'shaking', 'distressed', 'don\'t know what to do'],
+        timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(),
+      },
+    ],
+    priority: 'HIGH',
+    metrics: {
+      startedAt: new Date(Date.now() - 6 * 60 * 1000).toISOString(),
+      firstResponseAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+      agentTurns: { grace: 2 },
+    },
+    language: 'en',
+  };
+  store.conversations.set(c5id, c5);
+
+  // 6. Mr. Cheung — multiple business properties, complex (human-active)
+  const c6id = 'demo-cheung-006';
+  const c6: Conversation = {
+    id: c6id,
+    customerId: 'cust-cheung',
+    customerName: 'Michael Cheung',
+    status: 'human-active',
+    currentAgent: 'human',
+    operatorId: 'operator-1',
+    messages: [
+      makeMsg(c6id, 'customer', "I own three commercial units in Kwun Tong. All three have roof damage. This is a major claim — probably HKD 2 million plus.", undefined, 35),
+      makeMsg(c6id, 'agent', "I'm Phoenix, a senior AI claims specialist at Chubb. I can see this situation needs careful attention, and I'm listening. Please tell me everything.", 'phoenix', 34),
+      makeMsg(c6id, 'customer', 'I have three separate policies — HK-COM-2024-11001, HK-COM-2024-11002, and HK-COM-2024-11003. All need assessors urgently.', undefined, 32),
+      makeMsg(c6id, 'agent', "Mr. Cheung, understood completely. Three commercial policies with significant structural damage — this requires a senior commercial claims manager, not an AI agent. I'm escalating you right now to our commercial team. You'll get a dedicated case manager who can coordinate all three assessors simultaneously.\n\nI'm placing this at the top of our commercial priority queue.", 'phoenix', 31),
+      makeMsg(c6id, 'system', 'Escalated to human — complex multi-policy commercial claim exceeding standard AI scope', undefined, 31),
+      makeMsg(c6id, 'agent', "Mr. Cheung, this is David from the Chubb Commercial Claims team. I have all three policy files open in front of me. Let's go through each property systematically.", 'human', 28),
+    ],
+    routing: [
+      {
+        assignedAgent: 'phoenix',
+        reasoning: 'High-value multi-property commercial claim — complex case needs senior handling',
+        confidence: 0.93,
+        triggers: ['commercial', 'multiple properties', 'high value', 'complex'],
+        timestamp: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
+      },
+      {
+        assignedAgent: 'human',
+        reasoning: 'Multi-policy commercial claim exceeds AI scope — mandatory human escalation',
+        confidence: 1.0,
+        triggers: ['multi-policy', 'commercial', 'HKD 2 million'],
+        timestamp: new Date(Date.now() - 31 * 60 * 1000).toISOString(),
+      },
+    ],
+    priority: 'HIGH',
+    metrics: {
+      startedAt: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
+      firstResponseAt: new Date(Date.now() - 34 * 60 * 1000).toISOString(),
+      agentTurns: { phoenix: 2 },
+      waitTimeMs: 3 * 60 * 1000,
+    },
+    language: 'en',
+  };
+  store.conversations.set(c6id, c6);
+
+  // 7. Fiona Ng — policy question about contents claim limit (with-kara)
+  const c7id = 'demo-fiona-007';
+  const c7: Conversation = {
+    id: c7id,
+    customerId: 'cust-fiona',
+    customerName: 'Fiona Ng',
+    status: 'with-kara',
+    currentAgent: 'kara',
+    messages: [
+      makeMsg(c7id, 'customer', "My TV and laptop were destroyed when water came through the ceiling. How much will I get back? I paid HKD 18,000 for the TV and HKD 12,000 for the laptop.", undefined, 18),
+      makeMsg(c7id, 'agent', "Hi, I'm Kara, an AI knowledge specialist at Chubb. Good news — contents damage from typhoon water ingress is typically covered under home policies.\n\nFor electronics, reimbursement is based on current market value (not original price), minus your excess. Depreciation also applies to items over 2–3 years old. Can I get your policy number to check your exact contents limit and excess?", 'kara', 17),
+      makeMsg(c7id, 'customer', 'Policy is HK-HOME-2023-44512. The TV is 18 months old, laptop is 3 years old.', undefined, 16),
+      makeMsg(c7id, 'agent', "Thank you, Fiona. With HK-HOME-2023-44512, your standard contents limit is HKD 150,000 — so both items are well within scope.\n\nEstimated reimbursement (subject to formal assessment):\n- TV (18 months): ~80% of current market value, roughly HKD 12,000–14,000\n- Laptop (3 years): ~50% of current market value, roughly HKD 5,000–6,000\n- Minus your HKD 500 excess on contents claims\n\nWould you like me to open a contents claim now?", 'kara', 15),
+    ],
+    routing: [
+      {
+        assignedAgent: 'kara',
+        reasoning: 'Policy question about contents coverage and reimbursement amounts — FAQ type, no distress or urgency',
+        confidence: 0.92,
+        triggers: ['contents claim', 'how much', 'policy coverage', 'electronics'],
+        timestamp: new Date(Date.now() - 18 * 60 * 1000).toISOString(),
+      },
+    ],
+    priority: 'MEDIUM',
+    metrics: {
+      startedAt: new Date(Date.now() - 18 * 60 * 1000).toISOString(),
+      firstResponseAt: new Date(Date.now() - 17 * 60 * 1000).toISOString(),
+      agentTurns: { kara: 2 },
+    },
+    language: 'en',
+  };
+  store.conversations.set(c7id, c7);
+
+  // 8. Kevin Ho — vehicle breakdown, wants fast action (with-swift)
+  const c8id = 'demo-kevin-008';
+  const c8: Conversation = {
+    id: c8id,
+    customerId: 'cust-kevin',
+    customerName: 'Kevin Ho',
+    status: 'with-swift',
+    currentAgent: 'swift',
+    messages: [
+      makeMsg(c8id, 'customer', "Roof tiles fell on my car in the car park. Boot is completely crushed. I need a claim reference and a recovery truck today.", undefined, 3),
+      makeMsg(c8id, 'agent', "Swift here — AI claims specialist. Roof tile impact, crushed boot — got it. Policy number?", 'swift', 2),
+      makeMsg(c8id, 'customer', 'HK-MOT-2024-76543, 2022 Honda CR-V.', undefined, 1),
+      makeMsg(c8id, 'agent', "Confirmed — HK-MOT-2024-76543, 2022 Honda CR-V.\n\n1. Claim reference opened: CLM-2024-76543-T\n2. Recovery truck dispatched — ETA 90 minutes, driver will call when 20 mins away\n3. Photos needed: boot area, tiles, all 4 sides\n4. Do NOT drive the vehicle until assessed\n\nSend photos to claims-hk@chubb.com with your reference number. Anything else?", 'swift', 0),
+    ],
+    routing: [
+      {
+        assignedAgent: 'swift',
+        reasoning: 'Urgent vehicle damage, specific action requests (reference + truck today), no emotional distress',
+        confidence: 0.95,
+        triggers: ['vehicle damage', 'urgent', 'needs action today', 'recovery truck'],
+        timestamp: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
+      },
+    ],
+    priority: 'HIGH',
+    metrics: {
+      startedAt: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
+      firstResponseAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+      agentTurns: { swift: 2 },
+    },
+    language: 'en',
+  };
+  store.conversations.set(c8id, c8);
 }
 
 // Seed once at module load

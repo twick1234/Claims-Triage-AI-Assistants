@@ -42,6 +42,14 @@ const NAV_TILES = [
     border: "border-red-500",
   },
   {
+    href: "/architecture",
+    emoji: "🏗️",
+    title: "Solution Architecture",
+    desc: "Full conceptual, logical and physical design — agents, data model, infrastructure, tech stack, and production roadmap.",
+    color: "from-indigo-600 to-indigo-800",
+    border: "border-indigo-500",
+  },
+  {
     href: "/security",
     emoji: "🔒",
     title: "Security",
@@ -170,29 +178,69 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Triage flow */}
+        {/* Prototype Flow */}
         <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-            Routing Flow
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-5">
+            Prototype Flow — What This Demonstrates
           </h2>
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="bg-gray-700 text-gray-300 px-3 py-1 rounded-full">Customer Message</span>
-            <span className="text-gray-600">→</span>
-            <span className="bg-gray-600 text-white px-3 py-1 rounded-full">Triage Agent (LLM)</span>
-            <span className="text-gray-600">→</span>
-            <span className="bg-blue-700 text-white px-3 py-1 rounded-full">Grace 💙</span>
-            <span className="text-gray-500 text-xs">or</span>
-            <span className="bg-amber-600 text-white px-3 py-1 rounded-full">Swift ⚡</span>
-            <span className="text-gray-500 text-xs">or</span>
-            <span className="bg-emerald-600 text-white px-3 py-1 rounded-full">Kara 📚</span>
-            <span className="text-gray-500 text-xs">or</span>
-            <span className="bg-red-600 text-white px-3 py-1 rounded-full">Phoenix 🔥</span>
-            <span className="text-gray-500 text-xs">or</span>
-            <span className="bg-violet-600 text-white px-3 py-1 rounded-full">Human Queue 👤</span>
+
+          {/* Flow steps */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mb-6">
+            {[
+              { step: '1', label: 'Customer', sub: 'opens /chat, describes damage', color: 'bg-gray-700 border-gray-600', icon: '💬' },
+              { step: '2', label: 'Triage Agent', sub: 'LLM reads sentiment + keywords', color: 'bg-gray-600 border-gray-500', icon: '🎯' },
+              { step: '3', label: 'Specialist', sub: 'Grace · Swift · Kara · Phoenix', color: 'bg-blue-900/60 border-blue-700', icon: '🤖' },
+              { step: '4', label: 'Escalation', sub: '3+ turns → human queue', color: 'bg-violet-900/60 border-violet-700', icon: '👤' },
+              { step: '5', label: 'Resolved', sub: 'operator closes, NPS logged', color: 'bg-emerald-900/60 border-emerald-700', icon: '✅' },
+            ].map((s, i) => (
+              <div key={s.step} className="flex items-start gap-2">
+                <div className={`flex-1 border rounded-xl p-3 text-center ${s.color}`}>
+                  <div className="text-xl mb-1">{s.icon}</div>
+                  <div className="text-xs font-bold text-white">{s.label}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">{s.sub}</div>
+                </div>
+                {i < 4 && <div className="text-gray-600 self-center text-lg mt-2">→</div>}
+              </div>
+            ))}
           </div>
-          <p className="text-xs text-gray-500 mt-3">
-            Hard-coded overrides run first (emergency, legal, human request) then LLM analysis for sentiment-based routing.
-            After 3+ unresolved turns, auto-escalate to human queue.
+
+          {/* Two override paths */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <div className="bg-red-900/20 border border-red-800/40 rounded-xl p-3">
+              <div className="text-xs font-semibold text-red-400 mb-1">Hard Override — Emergency</div>
+              <div className="text-xs text-gray-400">Keywords: fire · gas · 999 → Grace + human notified immediately</div>
+            </div>
+            <div className="bg-orange-900/20 border border-orange-800/40 rounded-xl p-3">
+              <div className="text-xs font-semibold text-orange-400 mb-1">Hard Override — Legal</div>
+              <div className="text-xs text-gray-400">Keywords: lawyer · sue · court → Phoenix instantly, bypasses triage</div>
+            </div>
+            <div className="bg-violet-900/20 border border-violet-800/40 rounded-xl p-3">
+              <div className="text-xs font-semibold text-violet-400 mb-1">Hard Override — Human Request</div>
+              <div className="text-xs text-gray-400">Keywords: real person · human · 真人 → human queue immediately</div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-sm border-t border-gray-700 pt-4">
+            <span className="text-xs text-gray-500 font-medium">Routing order:</span>
+            <span className="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-xs">Customer Message</span>
+            <span className="text-gray-600">→</span>
+            <span className="bg-gray-600 text-white px-3 py-1 rounded-full text-xs">Overrides check</span>
+            <span className="text-gray-600">→</span>
+            <span className="bg-gray-600 text-white px-3 py-1 rounded-full text-xs">LLM Triage (claude-sonnet-4-6)</span>
+            <span className="text-gray-600">→</span>
+            <span className="bg-blue-700 text-white px-3 py-1 rounded-full text-xs">Grace 💙</span>
+            <span className="text-gray-500 text-xs">/</span>
+            <span className="bg-amber-600 text-white px-3 py-1 rounded-full text-xs">Swift ⚡</span>
+            <span className="text-gray-500 text-xs">/</span>
+            <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs">Kara 📚</span>
+            <span className="text-gray-500 text-xs">/</span>
+            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs">Phoenix 🔥</span>
+            <span className="text-gray-500 text-xs">/</span>
+            <span className="bg-violet-600 text-white px-3 py-1 rounded-full text-xs">Human 👤</span>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            Each AI agent runs on <span className="text-amber-400">claude-sonnet-4-6</span> via the Anthropic API.
+            In simulation mode all 5 agents run in-process. Once boards arrive, each moves to its own Sipeed board running PicoClaw.
           </p>
         </div>
       </div>

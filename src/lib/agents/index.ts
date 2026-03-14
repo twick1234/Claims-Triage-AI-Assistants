@@ -29,13 +29,28 @@ export async function streamAgentResponse(
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const systemPrompt = getAgentSystemPrompt(agentId);
 
-  // Convert conversation messages to Anthropic format
-  const anthropicMessages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+  // Convert conversation messages to Anthropic format.
+  // Include ALL agent messages as 'assistant' so context is preserved across
+  // agent handoffs. Merge consecutive same-role messages to satisfy the
+  // Claude API alternating-role requirement.
+  const raw: Array<{ role: 'user' | 'assistant'; content: string }> = [];
   for (const msg of messages) {
     if (msg.role === 'customer') {
-      anthropicMessages.push({ role: 'user', content: msg.content });
-    } else if (msg.role === 'agent' && msg.agentId === agentId) {
-      anthropicMessages.push({ role: 'assistant', content: msg.content });
+      raw.push({ role: 'user', content: msg.content });
+    } else if (msg.role === 'agent') {
+      raw.push({ role: 'assistant', content: msg.content });
+    }
+    // system messages are skipped — they're context only
+  }
+
+  // Merge consecutive messages with the same role
+  const anthropicMessages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+  for (const m of raw) {
+    const last = anthropicMessages[anthropicMessages.length - 1];
+    if (last && last.role === m.role) {
+      last.content += '\n' + m.content;
+    } else {
+      anthropicMessages.push({ ...m });
     }
   }
 
@@ -47,8 +62,8 @@ export async function streamAgentResponse(
   try {
     let fullText = '';
     const stream = client.messages.stream({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 512,
+      model: 'claude-sonnet-4-6',
+      max_tokens: 600,
       system: systemPrompt,
       messages: anthropicMessages,
     });
