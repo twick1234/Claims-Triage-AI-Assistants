@@ -76,16 +76,16 @@ export default function HomePage() {
         <div className="relative max-w-6xl mx-auto px-6 py-16 text-center">
           <div className="inline-flex items-center gap-2 bg-red-900/30 border border-red-700/50 text-red-400 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 uppercase tracking-widest">
             <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
-            Live Prototype — Typhoon Season HK 2024
+            Preparing for HK Typhoon Season 2026
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Claims Triage <span className="text-red-400">AI</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-2">
-            5-agent multi-AI system for Chubb HK typhoon claims. Powered by Anthropic Claude.
+            5-agent AI system built for Chubb HK typhoon claims surge. Ready before peak season hits.
           </p>
           <p className="text-gray-500 text-sm">
-            Intelligent triage · Real-time routing · Bilingual support · Human escalation
+            Intelligent triage · Real-time routing · Bilingual support · Human escalation · 24/7 coverage
           </p>
         </div>
       </div>
@@ -137,34 +137,34 @@ export default function HomePage() {
             <div className="text-3xl mt-0.5">🔌</div>
             <div className="flex-1 min-w-0">
               <h2 className="text-base font-bold text-white mb-1 flex items-center gap-2">
-                Hardware Target — March 2026
+                Hardware Roadmap — Phased Rollout
                 <span className="text-xs font-normal bg-amber-900/40 border border-amber-700/40 text-amber-400 px-2 py-0.5 rounded-full">
-                  Coming soon
+                  Board 1 arriving Mar 2026
                 </span>
               </h2>
               <p className="text-sm text-gray-400 mb-4">
-                Currently running in <span className="text-amber-400 font-semibold">simulation mode</span> — all 5 agents share this laptop process.
-                Hardware target: 5 dedicated Sipeed LicheeRV Nano W boards (one per agent), connected over WiFi 6.
+                Currently running in <span className="text-amber-400 font-semibold">simulation mode</span> — all agents run in the cloud via Vercel, no laptop required.
+                The goal: one dedicated Sipeed LicheeRV Nano W board per agent. Starting with <span className="text-blue-400 font-semibold">Grace</span> — validate it works, then order more.
               </p>
               {/* Mini board diagram */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {[
-                  { emoji: "💙", name: "Grace", board: 1, color: "border-blue-500/50 bg-blue-900/20 text-blue-400" },
-                  { emoji: "⚡", name: "Swift",   board: 2, color: "border-amber-500/50 bg-amber-900/20 text-amber-400" },
-                  { emoji: "📚", name: "Kara",    board: 3, color: "border-emerald-500/50 bg-emerald-900/20 text-emerald-400" },
-                  { emoji: "🔥", name: "Phoenix", board: 4, color: "border-red-500/50 bg-red-900/20 text-red-400" },
-                  { emoji: "🎯", name: "Triage",  board: 5, color: "border-violet-500/50 bg-violet-900/20 text-violet-400" },
+                  { emoji: "💙", name: "Grace",   board: 1, color: "border-blue-500/70 bg-blue-900/30 text-blue-400", phase: "Arriving" },
+                  { emoji: "⚡", name: "Swift",   board: 2, color: "border-amber-500/30 bg-amber-900/10 text-amber-600", phase: "Phase 2" },
+                  { emoji: "📚", name: "Kara",    board: 3, color: "border-emerald-500/30 bg-emerald-900/10 text-emerald-600", phase: "Phase 3" },
+                  { emoji: "🔥", name: "Phoenix", board: 4, color: "border-red-500/30 bg-red-900/10 text-red-600", phase: "Phase 4" },
+                  { emoji: "🎯", name: "Triage",  board: 5, color: "border-violet-500/30 bg-violet-900/10 text-violet-600", phase: "Phase 5" },
                 ].map((b) => (
                   <div key={b.board} className={`border rounded-xl px-3 py-2 text-xs font-medium ${b.color}`}>
                     <div className="text-base mb-0.5">{b.emoji}</div>
                     <div>{b.name}</div>
-                    <div className="text-gray-500 font-normal">Board #{b.board}</div>
+                    <div className="text-gray-500 font-normal">{b.phase}</div>
                   </div>
                 ))}
               </div>
               <p className="text-xs text-gray-500">
                 ~$20/board · RISC-V 1 GHz · 256 MB RAM · WiFi 6 · USB-C powered · PicoClaw (Go) HTTP gateway to Claude API.
-                Total cluster cost: ~$100. <Link href="/hardware" className="text-cyan-400 hover:text-cyan-300 underline">View hardware dashboard →</Link>
+                Full cluster goal: ~$100. <Link href="/hardware" className="text-cyan-400 hover:text-cyan-300 underline">View hardware architecture →</Link>
               </p>
             </div>
           </div>
