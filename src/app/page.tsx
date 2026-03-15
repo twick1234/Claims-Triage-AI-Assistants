@@ -73,6 +73,14 @@ const NAV_TILES = [
     color: "from-rose-700 to-rose-900",
     border: "border-rose-600",
   },
+  {
+    href: "/office",
+    emoji: "🖥️",
+    title: "Operations Room",
+    desc: "Live agent ops centre — watch Grace, Swift, Kara, Phoenix and Triage work in real time.",
+    color: "from-violet-800 to-gray-900",
+    border: "border-violet-700",
+  },
 ];
 
 const AGENTS = [
