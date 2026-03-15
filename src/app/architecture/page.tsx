@@ -14,6 +14,148 @@ export default function ArchitecturePage() {
 
       <div className="max-w-6xl mx-auto px-6 py-12 space-y-16">
 
+        {/* ── VISION ── */}
+        <section className="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 border border-gray-700 rounded-3xl p-8 md:p-10">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-1 h-8 bg-red-500 rounded-full" />
+            <span className="text-xs font-semibold text-red-400 uppercase tracking-widest">Vision Statement</span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-white leading-snug mb-4 max-w-3xl">
+            Instant, empathetic, bilingual claims triage — available the moment a typhoon hits, at a cost that makes sense.
+          </h2>
+          <p className="text-gray-400 text-base leading-relaxed max-w-3xl mb-8">
+            When Typhoon Signal 8 or 10 is raised over Hong Kong, Chubb&apos;s claims team faces an immediate, predictable surge — hundreds of distressed customers, all at once, many elderly, many frightened, many unable to wait on hold.
+            Human teams cannot scale in hours. This system can.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: "⚡", title: "Instant response", body: "Every customer gets an intelligent, empathetic first response in under 3 seconds — 24 hours a day, before any human has picked up a phone." },
+              { icon: "💰", title: "Radical economics", body: "5-agent cluster running on $100 of hardware and ~$0.003 per conversation. Pays for itself in the first hour of a T10 event." },
+              { icon: "🎯", title: "Right specialist, first time", body: "AI triage routes every message — distressed to Grace, urgent to Swift, angry to Phoenix — so human agents only handle what genuinely needs them." },
+            ].map((v) => (
+              <div key={v.title} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-5">
+                <div className="text-2xl mb-3">{v.icon}</div>
+                <div className="text-sm font-bold text-white mb-2">{v.title}</div>
+                <div className="text-xs text-gray-400 leading-relaxed">{v.body}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── REQUIREMENTS ── */}
+        <section>
+          <SectionLabel label="00" title="Requirements" />
+
+          {/* Business requirements */}
+          <div className="mt-6 space-y-6">
+            <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
+              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-400" />
+                Business Requirements
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                {[
+                  { id: "BR-01", req: "Handle typhoon T8/T10 claims surge without hiring temporary staff", priority: "MUST" },
+                  { id: "BR-02", req: "Demonstrate AI viability to Chubb HK leadership at offsite", priority: "MUST" },
+                  { id: "BR-03", req: "Operate on mobile hotspot — no dependency on fixed infrastructure", priority: "MUST" },
+                  { id: "BR-04", req: "Support bilingual customers (English and Cantonese)", priority: "MUST" },
+                  { id: "BR-05", req: "Comply with HK GL8 AI disclosure requirements", priority: "MUST" },
+                  { id: "BR-06", req: "Provide management metrics: SLA adherence, agent utilisation, tNPS", priority: "SHOULD" },
+                  { id: "BR-07", req: "Prove concept with 1 board before committing to full cluster", priority: "SHOULD" },
+                  { id: "BR-08", req: "Full cluster hardware budget under $100", priority: "SHOULD" },
+                ].map((r) => (
+                  <div key={r.id} className="flex items-start gap-3">
+                    <span className="text-xs font-mono text-gray-600 mt-0.5 shrink-0">{r.id}</span>
+                    <span className="text-gray-300 text-xs flex-1">{r.req}</span>
+                    <span className={`text-xs font-semibold shrink-0 ${r.priority === "MUST" ? "text-red-400" : "text-amber-400"}`}>{r.priority}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Functional requirements */}
+            <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
+              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-blue-400" />
+                Functional Requirements
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                {[
+                  { id: "FR-01", req: "Triage agent classifies every incoming message and routes to a specialist", priority: "MUST" },
+                  { id: "FR-02", req: "Hard-coded overrides for emergency, legal, and human-request keywords", priority: "MUST" },
+                  { id: "FR-03", req: "Sticky routing — agent assignment persists for the conversation lifetime", priority: "MUST" },
+                  { id: "FR-04", req: "Human escalation queue with operator pickup and resolution flow", priority: "MUST" },
+                  { id: "FR-05", req: "Telegram bot interface per agent (@ChuTriage_bot, @ChuGrace_bot, etc.)", priority: "MUST" },
+                  { id: "FR-06", req: "Real-time dashboard via SSE — no page refresh needed", priority: "MUST" },
+                  { id: "FR-07", req: "Context handoff — triage passes [Context:] brief to specialist", priority: "MUST" },
+                  { id: "FR-08", req: "Operations Room — live visual of all agents and their status", priority: "SHOULD" },
+                  { id: "FR-09", req: "Scenario simulator — fire pre-built typhoon scenarios for demo", priority: "SHOULD" },
+                  { id: "FR-10", req: "Auto-reply simulation for human queue demonstration", priority: "SHOULD" },
+                  { id: "FR-11", req: "Management metrics: response times, agent turns, SLA, NPS", priority: "SHOULD" },
+                  { id: "FR-12", req: "Health cron — auto-restart any failed agent service", priority: "SHOULD" },
+                ].map((r) => (
+                  <div key={r.id} className="flex items-start gap-3">
+                    <span className="text-xs font-mono text-gray-600 mt-0.5 shrink-0">{r.id}</span>
+                    <span className="text-gray-300 text-xs flex-1">{r.req}</span>
+                    <span className={`text-xs font-semibold shrink-0 ${r.priority === "MUST" ? "text-red-400" : "text-amber-400"}`}>{r.priority}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Non-functional requirements */}
+            <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
+              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                Non-Functional Requirements
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                {[
+                  { id: "NFR-01", cat: "Performance", req: "First AI response within 3 seconds of customer message" },
+                  { id: "NFR-02", cat: "Availability", req: "Each agent process auto-restarts within 5s of failure (systemd + cron)" },
+                  { id: "NFR-03", cat: "Portability", req: "Full cluster operational on a single mobile hotspot, no fixed infrastructure" },
+                  { id: "NFR-04", cat: "Cost", req: "Hardware ≤$20/board, ~$0.003/conversation API cost at Sonnet pricing" },
+                  { id: "NFR-05", cat: "Compliance", req: "GL8: AI identity disclosed on first message of every conversation" },
+                  { id: "NFR-06", cat: "Privacy", req: "No PII persisted beyond session — in-memory store resets on restart" },
+                  { id: "NFR-07", cat: "Scalability", req: "Adding capacity = buying one more $20 board — no code changes" },
+                  { id: "NFR-08", cat: "Footprint", req: "PicoClaw binary: <20MB RAM per agent on RISC-V hardware" },
+                ].map((r) => (
+                  <div key={r.id} className="flex items-start gap-3">
+                    <span className="text-xs font-mono text-gray-600 mt-0.5 shrink-0">{r.id}</span>
+                    <span className="text-xs text-violet-400 shrink-0 mt-0.5">{r.cat}</span>
+                    <span className="text-gray-300 text-xs flex-1">{r.req}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Constraints */}
+            <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
+              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-400" />
+                Constraints & Assumptions
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-400">
+                {[
+                  "Anthropic Claude API (claude-sonnet-4-6) is the only LLM provider — no local inference",
+                  "Telegram Bot API is the customer-facing channel for the Telegram flow",
+                  "Vercel is for presentation/demo only — cannot reach private board IPs",
+                  "In-memory store is intentional for demo — production would require persistent DB",
+                  "claude.ai OAuth subscription used for PicoClaw auth — no separate API credits needed",
+                  "Boards must be on the same WiFi/hotspot as the dashboard laptop",
+                  "Each Sipeed board runs one agent only — no multi-tenancy per board",
+                  "Phoenix bot pending BotFather rate limit — available shortly",
+                ].map((c, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="text-gray-600 mt-0.5 shrink-0">—</span>
+                    <span>{c}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── SECTION 1: Overview ── */}
         <section>
           <SectionLabel label="01" title="What This System Does" />

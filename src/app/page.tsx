@@ -113,11 +113,15 @@ export default function HomePage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Claims Triage <span className="text-red-400">AI</span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-2">
-            5-agent AI system built for Chubb HK typhoon claims surge. Ready before peak season hits.
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-3 leading-relaxed">
+            Instant, empathetic, bilingual claims triage — available the moment a typhoon hits, at a cost that makes sense.
           </p>
-          <p className="text-gray-500 text-sm">
-            Intelligent triage · Real-time routing · Bilingual support · Human escalation · 24/7 coverage
+          <p className="text-gray-500 text-sm max-w-xl mx-auto mb-1">
+            When Signal 8 or 10 is raised, every distressed customer gets an intelligent first response in under 3 seconds.
+            Human agents handle only what genuinely needs them.
+          </p>
+          <p className="text-gray-600 text-xs mt-2">
+            Intelligent triage · Real-time routing · Bilingual EN/廣東話 · Human escalation · 24/7 · ~$0.003/conversation
           </p>
         </div>
       </div>
