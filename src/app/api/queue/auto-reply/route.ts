@@ -4,7 +4,7 @@ import { store, broadcast } from '@/lib/store';
 import { Message } from '@/lib/types';
 
 function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return crypto.randomUUID();
 }
 
 const CUSTOMER_PERSONA_PROMPT = `You are simulating a real customer in an insurance claim conversation with Chubb HK.

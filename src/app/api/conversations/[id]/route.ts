@@ -18,7 +18,10 @@ export async function PATCH(
   if (!conversation) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const body = await request.json();
-  Object.assign(conversation, body);
+  // Allowlist only safe mutable fields — never use Object.assign with raw request body
+  const { status, priority } = body as { status?: string; priority?: string };
+  if (status !== undefined) conversation.status = status as typeof conversation.status;
+  if (priority !== undefined) conversation.priority = priority as typeof conversation.priority;
   store.conversations.set(params.id, conversation);
   broadcast('conversation_updated', conversation);
 

@@ -13,7 +13,17 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
-        ],
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline'",
+              "connect-src 'self' https://api.anthropic.com",
+              "img-src 'self' data:",
+              "font-src 'self'",
+            ].join('; '),
+          },
       },
     ];
   },
