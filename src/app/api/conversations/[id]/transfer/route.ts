@@ -3,7 +3,7 @@ import { store, broadcast } from '@/lib/store';
 import { AgentId, Message, ConversationStatus } from '@/lib/types';
 
 function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return crypto.randomUUID();
 }
 
 const STATUS_MAP: Record<AgentId, ConversationStatus> = {
