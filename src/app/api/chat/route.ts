@@ -4,8 +4,10 @@ import { Message, AgentId } from '@/lib/types';
 import { routeConversation, getStatusForAgent } from '@/lib/triage/router';
 import { streamAgentResponse } from '@/lib/agents';
 
+import { randomUUID } from 'crypto';
+
 function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return randomUUID();
 }
 
 const PRIORITY_MAP: Record<string, 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'> = {
