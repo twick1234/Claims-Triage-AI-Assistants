@@ -249,8 +249,8 @@ function createAgentServer(agentId, config) {
     res.end('Not found');
   });
 
-  server.listen(config.port, () => {
-    console.log(`  ✓ ${agentId.padEnd(8)} → http://localhost:${config.port}  (${MODEL})`);
+  server.listen(config.port, '127.0.0.1', () => {
+    console.log(`  ✓ ${agentId.padEnd(8)} → http://127.0.0.1:${config.port}  (${MODEL})`);
   });
 
   return server;
