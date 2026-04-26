@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { store, broadcast } from '@/lib/store';
 import { AgentId, Message, ConversationStatus } from '@/lib/types';
 
+import { randomUUID } from 'crypto';
 function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return randomUUID();
 }
 
 const STATUS_MAP: Record<AgentId, ConversationStatus> = {
@@ -32,14 +33,22 @@ export async function POST(
   if (!conversation) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const { toAgent, reason } = await request.json();
+  const validAgents: AgentId[] = ['triage', 'grace', 'swift', 'kara', 'phoenix', 'human'];
+  if (!validAgents.includes(toAgent)) {
+    return NextResponse.json({ error: 'Invalid agent' }, { status: 400 });
+  }
   const agent = toAgent as AgentId;
+  // Strip control characters from reason to prevent SSE protocol injection
+  const safeReason = typeof reason === 'string'
+    ? reason.replace(/[\r\n\x00-\x1f]/g, ' ').slice(0, 200)
+    : undefined;
 
   // Add system message about transfer
   const sysMsg: Message = {
     id: uuid(),
     conversationId: params.id,
     role: 'system',
-    content: `Transferred to ${AGENT_LABELS[agent]}${reason ? ` — ${reason}` : ''}`,
+    content: `Transferred to ${AGENT_LABELS[agent]}${safeReason ? ` — ${safeReason}` : ''}`,
     timestamp: new Date().toISOString(),
   };
   conversation.messages.push(sysMsg);

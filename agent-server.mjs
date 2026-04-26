@@ -24,7 +24,8 @@ import { readFileSync } from 'fs';
 function loadEnv() {
   try {
     const raw = readFileSync('.env.local', 'utf8');
-    const key = raw.match(/ANTHROPIC_API_KEY=(.+)/)?.[1]?.trim();
+    // Anchored to line start to avoid matching commented-out keys
+    const key = raw.match(/^ANTHROPIC_API_KEY=(.+)/m)?.[1]?.trim();
     if (key && key !== 'sk-ant-your-key-here') return key;
   } catch {}
   return process.env.ANTHROPIC_API_KEY;
@@ -168,11 +169,21 @@ async function callClaude(system, messages, stream = false) {
   return res;
 }
 
+const MAX_BODY_BYTES = 64 * 1024; // 64 KB
+
 // Parse JSON body from request
 function parseBody(req) {
   return new Promise((resolve, reject) => {
     let data = '';
-    req.on('data', (chunk) => (data += chunk));
+    let size = 0;
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > MAX_BODY_BYTES) {
+        req.destroy();
+        return reject(new Error('Request body too large'));
+      }
+      data += chunk;
+    });
     req.on('end', () => {
       try { resolve(JSON.parse(data)); } catch (e) { reject(e); }
     });
@@ -240,7 +251,8 @@ function createAgentServer(agentId, config) {
         if (!res.headersSent) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
         }
-        res.end(JSON.stringify({ error: err.message }));
+        // Return a generic error — do not expose internal error details to callers
+        res.end(JSON.stringify({ error: 'Internal server error' }));
       }
       return;
     }

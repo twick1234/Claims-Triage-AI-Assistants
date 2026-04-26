@@ -449,7 +449,7 @@ export default function HardwarePage() {
               {
                 n: "3",
                 title: "SSH in",
-                code: "ssh root@192.168.1.51\n# Password: root (or blank)",
+                code: "ssh root@<BOARD_IP>\n# Change the default password immediately after first login:\n# passwd",
               },
               {
                 n: "4",

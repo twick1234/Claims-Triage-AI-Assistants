@@ -1,7 +1,8 @@
+import { randomUUID } from 'crypto';
 import { Conversation, Message, AgentId } from './types';
 
 function uuid(): string {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return randomUUID();
 }
 
 function makeMsg(
@@ -26,7 +27,9 @@ export const store: Store = {
 };
 
 export function broadcast(event: string, data: unknown) {
-  const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  // Strip newlines from event name to prevent SSE protocol injection
+  const safeEvent = event.replace(/[\r\n]/g, '');
+  const message = `event: ${safeEvent}\ndata: ${JSON.stringify(data)}\n\n`;
   store.sseClients.forEach((controller) => {
     try {
       controller.enqueue(new TextEncoder().encode(message));

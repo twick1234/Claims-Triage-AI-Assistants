@@ -20,11 +20,12 @@ export function createSSEResponse(
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
     },
   });
 }
 
 export function formatSSEEvent(event: string, data: unknown): string {
-  return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  const safeEvent = event.replace(/[\r\n]/g, '');
+  return `event: ${safeEvent}\ndata: ${JSON.stringify(data)}\n\n`;
 }
