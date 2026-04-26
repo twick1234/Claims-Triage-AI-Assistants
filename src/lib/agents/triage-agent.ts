@@ -38,7 +38,12 @@ export async function runTriageAgent(conversationText: string): Promise<TriageRe
     const text = response.content[0].type === 'text' ? response.content[0].text : '';
     // Strip markdown code fences if present
     const cleaned = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-    return JSON.parse(cleaned) as TriageResult;
+    const parsed = JSON.parse(cleaned);
+    const validAgents = ['grace', 'swift', 'kara', 'phoenix', 'human'];
+    if (!validAgents.includes(parsed?.agent) || typeof parsed?.reasoning !== 'string') {
+      throw new Error('Invalid triage response shape');
+    }
+    return parsed as TriageResult;
   } catch (err) {
     console.error('Triage agent error:', err);
     // Fallback rule-based triage

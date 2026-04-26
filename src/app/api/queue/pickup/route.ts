@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import { store, broadcast } from '@/lib/store';
 
 export async function POST(request: Request) {
-  const { conversationId, operatorId = 'operator-1' } = await request.json();
+  const { conversationId } = await request.json();
+  // operatorId is NOT accepted from caller — it must come from the authenticated session.
+  // Using a fixed identifier until proper auth is implemented.
+  const operatorId = 'operator-1';
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) return NextResponse.json({ error: 'Not found' }, { status: 404 });

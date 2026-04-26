@@ -4,8 +4,9 @@ import { Message, AgentId } from '@/lib/types';
 import { routeConversation, getStatusForAgent } from '@/lib/triage/router';
 import { streamAgentResponse } from '@/lib/agents';
 
+import { randomUUID } from 'crypto';
 function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return randomUUID();
 }
 
 const PRIORITY_MAP: Record<string, 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'> = {
@@ -64,6 +65,7 @@ async function streamFromBoard(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages: boardMessages }),
+    signal: AbortSignal.timeout(30000),
   });
 
   if (!res.ok || !res.body) {
@@ -85,43 +87,38 @@ async function streamFromBoard(
   return fullText;
 }
 
+const MAX_CONTENT_LENGTH = 2000;
+
 export async function POST(request: Request) {
   const body = await request.json();
-  const { conversationId, content, role = 'customer' } = body;
+  // `role` is NOT accepted from caller — always treat incoming messages as 'customer'.
+  // Operator messages must come via the authenticated operator pickup flow.
+  const { conversationId, content } = body;
+
+  if (typeof content !== 'string' || content.trim().length === 0) {
+    return NextResponse.json({ error: 'content must be a non-empty string' }, { status: 400 });
+  }
+  if (content.length > MAX_CONTENT_LENGTH) {
+    return NextResponse.json({ error: `content must be ${MAX_CONTENT_LENGTH} characters or fewer` }, { status: 400 });
+  }
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) {
     return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
   }
 
-  // Add customer message
+  // Add customer message (role is always 'customer' from this endpoint)
   const customerMsg: Message = {
     id: uuid(),
     conversationId,
-    role,
+    role: 'customer',
     content,
     timestamp: new Date().toISOString(),
   };
   conversation.messages.push(customerMsg);
 
-  // If human-active, operator is handling — just broadcast and return
-  if (conversation.status === 'human-active' && role === 'agent') {
-    const agentMsg: Message = {
-      id: uuid(),
-      conversationId,
-      role: 'agent',
-      agentId: 'human',
-      content,
-      timestamp: new Date().toISOString(),
-    };
-    conversation.messages.push(agentMsg);
-    store.conversations.set(conversationId, conversation);
-    broadcast('conversation_updated', conversation);
-    return NextResponse.json({ message: agentMsg });
-  }
-
   // Triage / route
-  if (role === 'customer') {
+  {
     const routerResult = await routeConversation(conversation);
     const newAgent = routerResult.agent;
 
@@ -201,14 +198,7 @@ export async function POST(request: Request) {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
-        'X-Agent-Id': newAgent,
-        'X-Message-Id': agentMsgId,
-        'X-Mode': IS_HARDWARE ? 'hardware' : 'simulation',
       },
     });
   }
-
-  store.conversations.set(conversationId, conversation);
-  broadcast('conversation_updated', conversation);
-  return NextResponse.json({ message: customerMsg });
 }
