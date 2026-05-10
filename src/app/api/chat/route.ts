@@ -4,8 +4,8 @@ import { Message, AgentId } from '@/lib/types';
 import { routeConversation, getStatusForAgent } from '@/lib/triage/router';
 import { streamAgentResponse } from '@/lib/agents';
 
-function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+function uuid(): string {
+  return crypto.randomUUID();
 }
 
 const PRIORITY_MAP: Record<string, 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'> = {
@@ -27,6 +27,14 @@ const BOARD_URLS: Partial<Record<AgentId, string>> = {
 
 const IS_HARDWARE = process.env.AGENT_MODE === 'hardware';
 
+const ALLOWED_BOARD_PREFIXES = ['http://192.168.', 'http://localhost:', 'http://127.0.0.1:'];
+
+function validateBoardUrl(agentId: AgentId, url: string): void {
+  if (!ALLOWED_BOARD_PREFIXES.some((p) => url.startsWith(p))) {
+    throw new Error(`Board URL for ${agentId} is not in the allowed prefix list`);
+  }
+}
+
 /**
  * Hardware mode: POST messages to the PicoClaw board HTTP server.
  * The board streams back the agent response as plain text.
@@ -40,6 +48,7 @@ async function streamFromBoard(
   if (!boardUrl) {
     throw new Error(`No board URL configured for agent ${agentId}`);
   }
+  validateBoardUrl(agentId, boardUrl);
 
   // Build alternating user/assistant messages for the board
   const raw: Array<{ role: 'user' | 'assistant'; content: string }> = [];
@@ -85,9 +94,25 @@ async function streamFromBoard(
   return fullText;
 }
 
+const VALID_ROLES = new Set(['customer', 'agent']);
+const MAX_CONTENT_LENGTH = 4096;
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { conversationId, content, role = 'customer' } = body;
+
+  if (!conversationId || typeof conversationId !== 'string') {
+    return NextResponse.json({ error: 'conversationId required' }, { status: 400 });
+  }
+  if (!content || typeof content !== 'string') {
+    return NextResponse.json({ error: 'content required' }, { status: 400 });
+  }
+  if (content.length > MAX_CONTENT_LENGTH) {
+    return NextResponse.json({ error: `content exceeds ${MAX_CONTENT_LENGTH} characters` }, { status: 400 });
+  }
+  if (!VALID_ROLES.has(role)) {
+    return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
+  }
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) {
