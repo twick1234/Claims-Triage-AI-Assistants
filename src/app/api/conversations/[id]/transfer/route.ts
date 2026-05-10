@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { store, broadcast } from '@/lib/store';
 import { AgentId, Message, ConversationStatus } from '@/lib/types';
 
-function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+function uuid(): string {
+  return crypto.randomUUID();
 }
 
 const STATUS_MAP: Record<AgentId, ConversationStatus> = {
@@ -31,8 +31,13 @@ export async function POST(
   const conversation = store.conversations.get(params.id);
   if (!conversation) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-  const { toAgent, reason } = await request.json();
+  const { toAgent, reason: rawReason } = await request.json();
+  const VALID_AGENTS = new Set<string>(['triage', 'grace', 'swift', 'kara', 'phoenix', 'human']);
+  if (!VALID_AGENTS.has(toAgent)) {
+    return NextResponse.json({ error: 'Invalid agent' }, { status: 400 });
+  }
   const agent = toAgent as AgentId;
+  const reason = typeof rawReason === 'string' ? rawReason.slice(0, 200) : undefined;
 
   // Add system message about transfer
   const sysMsg: Message = {
