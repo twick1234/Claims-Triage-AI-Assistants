@@ -15,12 +15,16 @@ export function createSSEResponse(
     },
   });
 
+  // Restrict SSE to same-origin; the stream carries all conversation events.
+  const origin = process.env.NEXT_PUBLIC_APP_URL ?? '';
+  const corsOrigin = origin || 'null';
+
   return new Response(stream, {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': corsOrigin,
     },
   });
 }

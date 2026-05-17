@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
 import { store, broadcast } from '@/lib/store';
 import { Message, AgentId } from '@/lib/types';
 import { routeConversation, getStatusForAgent } from '@/lib/triage/router';
 import { streamAgentResponse } from '@/lib/agents';
 
 function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return randomUUID();
 }
 
 const PRIORITY_MAP: Record<string, 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'> = {
@@ -87,7 +88,13 @@ async function streamFromBoard(
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { conversationId, content, role = 'customer' } = body;
+  const { conversationId, content } = body;
+  // Role is always 'customer' for external submissions — never trust client-supplied role.
+  const role = 'customer' as const;
+
+  if (!content || typeof content !== 'string' || content.length > 4000) {
+    return NextResponse.json({ error: 'Invalid content' }, { status: 400 });
+  }
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) {
@@ -105,7 +112,7 @@ export async function POST(request: Request) {
   conversation.messages.push(customerMsg);
 
   // If human-active, operator is handling — just broadcast and return
-  if (conversation.status === 'human-active' && role === 'agent') {
+  if (conversation.status === 'human-active') {
     const agentMsg: Message = {
       id: uuid(),
       conversationId,

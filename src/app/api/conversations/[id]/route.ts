@@ -18,7 +18,13 @@ export async function PATCH(
   if (!conversation) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const body = await request.json();
-  Object.assign(conversation, body);
+
+  // Allowlist prevents mass-assignment — only operator-safe fields may be patched.
+  const PATCHABLE: Array<keyof typeof conversation> = ['status', 'priority', 'language'];
+  for (const key of PATCHABLE) {
+    if (key in body) (conversation as Record<string, unknown>)[key] = body[key];
+  }
+
   store.conversations.set(params.id, conversation);
   broadcast('conversation_updated', conversation);
 
