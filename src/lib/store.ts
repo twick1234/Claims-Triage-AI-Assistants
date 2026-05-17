@@ -1,7 +1,9 @@
 import { Conversation, Message, AgentId } from './types';
 
+import { randomUUID } from 'crypto';
+
 function uuid(): string {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return randomUUID();
 }
 
 function makeMsg(
