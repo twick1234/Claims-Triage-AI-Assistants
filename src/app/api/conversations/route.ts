@@ -13,9 +13,23 @@ export async function GET() {
   return NextResponse.json(conversations);
 }
 
+const VALID_LANGUAGES = ['en', 'zh'] as const;
+type ValidLanguage = (typeof VALID_LANGUAGES)[number];
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { customerName, language = 'en' } = body;
+
+  // Validate inputs
+  if (customerName !== undefined && typeof customerName !== 'string') {
+    return NextResponse.json({ error: 'customerName must be a string' }, { status: 400 });
+  }
+  if (typeof customerName === 'string' && customerName.length > 200) {
+    return NextResponse.json({ error: 'customerName too long' }, { status: 400 });
+  }
+  if (!VALID_LANGUAGES.includes(language as ValidLanguage)) {
+    return NextResponse.json({ error: 'Invalid language — must be "en" or "zh"' }, { status: 400 });
+  }
 
   const id = uuid();
   const conversation: Conversation = {

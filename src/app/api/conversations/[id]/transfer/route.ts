@@ -24,6 +24,8 @@ const AGENT_LABELS: Record<AgentId, string> = {
   human: 'a Human Agent 👤',
 };
 
+const VALID_AGENT_IDS: AgentId[] = ['triage', 'grace', 'swift', 'kara', 'phoenix', 'human'];
+
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
@@ -32,6 +34,16 @@ export async function POST(
   if (!conversation) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const { toAgent, reason } = await request.json();
+
+  // Validate toAgent is a known AgentId — prevents enumeration / injection
+  if (!toAgent || !VALID_AGENT_IDS.includes(toAgent as AgentId)) {
+    return NextResponse.json({ error: 'Invalid toAgent value' }, { status: 400 });
+  }
+  // reason is optional but must be a string if supplied
+  if (reason !== undefined && (typeof reason !== 'string' || reason.length > 500)) {
+    return NextResponse.json({ error: 'reason must be a string under 500 characters' }, { status: 400 });
+  }
+
   const agent = toAgent as AgentId;
 
   // Add system message about transfer
