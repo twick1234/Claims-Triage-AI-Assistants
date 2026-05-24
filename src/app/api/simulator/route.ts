@@ -12,7 +12,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { scenarioId } = await request.json();
+  const body = await request.json();
+  const { scenarioId } = body;
+
+  if (!scenarioId || typeof scenarioId !== 'string') {
+    return NextResponse.json({ error: 'scenarioId is required' }, { status: 400 });
+  }
+
   const scenario = SCENARIOS.find((s) => s.id === scenarioId);
   if (!scenario) return NextResponse.json({ error: 'Scenario not found' }, { status: 404 });
 

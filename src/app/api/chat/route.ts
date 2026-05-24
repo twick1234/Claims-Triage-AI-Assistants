@@ -85,9 +85,36 @@ async function streamFromBoard(
   return fullText;
 }
 
+// Maximum content length accepted from the caller.  This bounds the size of
+// user-supplied text forwarded to the Anthropic API, limiting both prompt-
+// injection surface and API cost from oversized payloads.
+const MAX_CONTENT_LENGTH = 4000;
+
+// Permitted roles that callers may supply.
+const VALID_ROLES = ['customer', 'agent'] as const;
+type ValidRole = (typeof VALID_ROLES)[number];
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { conversationId, content, role = 'customer' } = body;
+
+  // --- Input validation ---
+  if (!conversationId || typeof conversationId !== 'string') {
+    return NextResponse.json({ error: 'conversationId is required' }, { status: 400 });
+  }
+  if (!content || typeof content !== 'string') {
+    return NextResponse.json({ error: 'content is required and must be a string' }, { status: 400 });
+  }
+  if (content.length > MAX_CONTENT_LENGTH) {
+    return NextResponse.json(
+      { error: `content exceeds maximum length of ${MAX_CONTENT_LENGTH} characters` },
+      { status: 400 }
+    );
+  }
+  if (!VALID_ROLES.includes(role as ValidRole)) {
+    return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
+  }
+  // --- End input validation ---
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) {

@@ -25,6 +25,20 @@ export interface TriageResult {
   triggers: string[];
 }
 
+const VALID_AGENTS = ['grace', 'swift', 'kara', 'phoenix', 'human'] as const;
+type ValidAgentName = (typeof VALID_AGENTS)[number];
+
+/** Type guard — ensures the LLM returned a structurally valid TriageResult. */
+function isValidTriageResult(obj: unknown): obj is TriageResult {
+  if (typeof obj !== 'object' || obj === null) return false;
+  const r = obj as Record<string, unknown>;
+  if (!VALID_AGENTS.includes(r.agent as ValidAgentName)) return false;
+  if (typeof r.reasoning !== 'string') return false;
+  if (typeof r.confidence !== 'number' || r.confidence < 0 || r.confidence > 1) return false;
+  if (!Array.isArray(r.triggers)) return false;
+  return true;
+}
+
 export async function runTriageAgent(conversationText: string): Promise<TriageResult> {
   try {
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -38,7 +52,11 @@ export async function runTriageAgent(conversationText: string): Promise<TriageRe
     const text = response.content[0].type === 'text' ? response.content[0].text : '';
     // Strip markdown code fences if present
     const cleaned = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-    return JSON.parse(cleaned) as TriageResult;
+    const parsed: unknown = JSON.parse(cleaned);
+    if (!isValidTriageResult(parsed)) {
+      throw new Error('Triage LLM response failed schema validation');
+    }
+    return parsed;
   } catch (err) {
     console.error('Triage agent error:', err);
     // Fallback rule-based triage

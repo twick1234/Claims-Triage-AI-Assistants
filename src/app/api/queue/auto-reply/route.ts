@@ -22,7 +22,12 @@ Rules:
 - Output ONLY the customer's next message, nothing else`;
 
 export async function POST(request: Request) {
-  const { conversationId } = await request.json();
+  const body = await request.json();
+  const { conversationId } = body;
+
+  if (!conversationId || typeof conversationId !== 'string') {
+    return NextResponse.json({ error: 'conversationId is required' }, { status: 400 });
+  }
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) {

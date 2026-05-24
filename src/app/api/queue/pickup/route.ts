@@ -2,7 +2,15 @@ import { NextResponse } from 'next/server';
 import { store, broadcast } from '@/lib/store';
 
 export async function POST(request: Request) {
-  const { conversationId, operatorId = 'operator-1' } = await request.json();
+  const body = await request.json();
+  const { conversationId, operatorId = 'operator-1' } = body;
+
+  if (!conversationId || typeof conversationId !== 'string') {
+    return NextResponse.json({ error: 'conversationId is required' }, { status: 400 });
+  }
+  if (typeof operatorId !== 'string' || operatorId.length > 100) {
+    return NextResponse.json({ error: 'Invalid operatorId' }, { status: 400 });
+  }
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) return NextResponse.json({ error: 'Not found' }, { status: 404 });
