@@ -4,8 +4,11 @@ import { Message, AgentId } from '@/lib/types';
 import { routeConversation, getStatusForAgent } from '@/lib/triage/router';
 import { streamAgentResponse } from '@/lib/agents';
 
+const MAX_CONTENT_LENGTH = 10_000;
+const MAX_CONVERSATION_ID_LENGTH = 128;
+
 function uuid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return crypto.randomUUID();
 }
 
 const PRIORITY_MAP: Record<string, 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'> = {
@@ -88,6 +91,14 @@ async function streamFromBoard(
 export async function POST(request: Request) {
   const body = await request.json();
   const { conversationId, content, role = 'customer' } = body;
+
+  // Input validation
+  if (typeof conversationId !== 'string' || conversationId.length > MAX_CONVERSATION_ID_LENGTH) {
+    return NextResponse.json({ error: 'Invalid conversationId' }, { status: 400 });
+  }
+  if (typeof content !== 'string' || content.length > MAX_CONTENT_LENGTH) {
+    return NextResponse.json({ error: 'Message content too long or invalid' }, { status: 400 });
+  }
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) {
