@@ -87,7 +87,9 @@ async function streamFromBoard(
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { conversationId, content, role = 'customer' } = body;
+  const { conversationId, content, role: rawRole = 'customer' } = body;
+  // Whitelist valid external roles; anything else is treated as 'customer'
+  const role: 'customer' | 'agent' = rawRole === 'agent' ? 'agent' : 'customer';
 
   const conversation = store.conversations.get(conversationId);
   if (!conversation) {
